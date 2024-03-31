@@ -17,3 +17,7 @@
 configure.wrf*
 *.backup
 *.f90
+compile.log
+run/namelist.input
+test/em_real/
+tools/
