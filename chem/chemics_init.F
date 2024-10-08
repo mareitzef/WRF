@@ -2066,7 +2066,7 @@ USE module_configure,only:  grid_config_rec_type
 IMPLICIT NONE
 
 REAL, DIMENSION(8), INTENT(OUT) ::  rad_vprm, lambda_vprm, alpha_vprm, resp_vprm
-REAL, DIMENSION(8,4)    ::  vprm_table_us, vprm_table_europe, vprm_table_tropics, vprm_par
+REAL, DIMENSION(8,4)    ::  vprm_table_us, vprm_table_europe, vprm_table_tropics, vprm_par, vprm_table_alps
 
 DATA vprm_table_us &
      / 261.0, 324.0, 206.0, 363.0, 682.0, 757.0, 157.0, 0.0, &
@@ -2086,7 +2086,13 @@ DATA vprm_table_tropics &
       -0.2101, -0.1729, -0.2555, -0.0874, -0.1141, -0.1209, -0.1334, 0.0000, &
        0.1601, 0.3258, 0.3422, 0.0239, 0.0049, 0.0043, 0.0269, 0.0000, &
        0., 0., 0., 0., 0., 0., 0., 0. /
-
+!cmr: add my own parameters:
+DATA vprm_table_alps &
+     / 15.109,15.338,15.742,363.000,682.000,43.979,19.048, 0.0, &
+      -0.024,-0.017,-0.017,-0.087,-0.114,-0.010,-0.042, 0.0, &
+      0.189,0.210,0.131,0.024,0.005,0.273,0.428, 0.0, &
+      0.830,1.183,2.366,0.000,0.000,0.968,1.575, 0.0 /
+!cmr_end
 TYPE (grid_config_rec_type) , INTENT (IN) :: config_flags
 
 sel_pars: SELECT CASE(config_flags%vprm_opt)
@@ -2096,6 +2102,8 @@ CASE ('VPRM_table_EUROPE')
   vprm_par=vprm_table_europe
 CASE ('VPRM_table_TROPICS')
   vprm_par=vprm_table_tropics
+CASE ('VPRM_table_ALPS')
+  vprm_par=vprm_table_alps
 CASE DEFAULT
   CALL wrf_message("check vprm_opt in namelist.input")
   CALL wrf_error_fatal ( "NO PARAMETER TABLE IS INCLUDED FOR THIS VPRM TABLE OPTION!")

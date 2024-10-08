@@ -150,7 +150,8 @@ REAL  ::  a1,a2,a3,Tair,Tscale,Wscale,Pscale,GEE_frac,RESP_frac,evithresh,RADsca
 REAL, DIMENSION(8) ::  Tmax,Tmin,Topt
 ! These are universal VPRM parameters
 DATA Tmin   /0.,0.,0.,2.,2.,5.,2.,0./
-DATA Topt   /20.,20.,20.,20.,20.,22.,18.,0./
+!cmr: DATA Topt   /20.,20.,20.,20.,20.,22.,18.,0./
+DATA Topt   /18.111,26.623,25.282,20.000,20.000,22.159,23.282,0.0/ !cmr: optimized T_opt values
 DATA Tmax   /8*40./
 
 DO j=jts,min(jte,jde-1)
