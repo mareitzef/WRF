@@ -120,8 +120,12 @@ SUBROUTINE VPRM                 (  ids,ide, jds,jde,                 &
 
                                    vprm_in,rad0, lambda,            &
                                    alpha, RESP0,                    &
-                                   T2,RAD, eghg_bio                  )
+                                 !cmr  T2,RAD, eghg_bio                )
+                                 T2,RAD, eghg_bio, config_flags        ) !cmr
 !IMPLICIT NONE
+
+USE module_configure,only:  grid_config_rec_type !cmr
+TYPE (grid_config_rec_type) , INTENT (IN) :: config_flags !cmr
 
 INTEGER,  INTENT(IN   )   ::  ids,ide, jds,jde, &
                               ims,ime, jms,jme, &
@@ -151,8 +155,23 @@ REAL, DIMENSION(8) ::  Tmax,Tmin,Topt
 ! These are universal VPRM parameters
 DATA Tmin   /0.,0.,0.,2.,2.,5.,2.,0./
 !cmr: DATA Topt   /20.,20.,20.,20.,20.,22.,18.,0./
-DATA Topt   /18.111,26.623,25.282,20.000,20.000,22.159,23.282,0.0/ !cmr: optimized T_opt values
 DATA Tmax   /8*40./
+
+! cmr begin: use optimized Temperature for Alps
+sel_pars: SELECT CASE(config_flags%vprm_opt)
+CASE ('VPRM_table_US')
+  DATA Topt   /20.,20.,20.,20.,20.,22.,18.,0./
+CASE ('VPRM_table_EUROPE')
+  DATA Topt   /20.,20.,20.,20.,20.,22.,18.,0./
+CASE ('VPRM_table_TROPICS')
+  DATA Topt   /20.,20.,20.,20.,20.,22.,18.,0./
+CASE ('VPRM_table_ALPS') 
+  DATA Topt   /18.111,26.623,25.282,20.000,20.000,22.159,23.282,0.000/ !cmr: optimized values
+CASE DEFAULT
+  CALL wrf_message("check vprm_opt in namelist.input")
+  CALL wrf_error_fatal ( "NO PARAMETER TABLE IS INCLUDED FOR THIS VPRM TABLE OPTION!")
+END SELECT sel_pars
+! cmr end
 
 DO j=jts,min(jte,jde-1)
 DO i=its,min(ite,ide-1)

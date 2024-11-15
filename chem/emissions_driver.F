@@ -1088,7 +1088,8 @@ CONTAINS
                          vprm_in,rad_vprm,lambda_vprm,       &
                          alpha_vprm,resp_vprm,               &
                          T2,swdown,                          &
-                         eghg_bio                            )
+                         !cmr eghg_bio                            )
+                         eghg_bio, config_flags        ) !cmr
 
   ! Update the biospheric CH4 fluxes if the GHG option is called
    if (p_ch4_bio .GT. 1) then

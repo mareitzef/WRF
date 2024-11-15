@@ -2088,10 +2088,10 @@ DATA vprm_table_tropics &
        0., 0., 0., 0., 0., 0., 0., 0. /
 !cmr: add my own parameters:
 DATA vprm_table_alps &
-     / 15.109,15.338,15.742,363.000,682.000,43.979,19.048, 0.0, &
-      -0.024,-0.017,-0.017,-0.087,-0.114,-0.010,-0.042, 0.0, &
-      0.189,0.210,0.131,0.024,0.005,0.273,0.428, 0.0, &
-      0.830,1.183,2.366,0.000,0.000,0.968,1.575, 0.0 /
+     / 232.299, 235.822, 242.245, 718.812, 1350.495, 676.207, 292.876, 0.000, & !cmr my values divided by 0.505
+      -0.376, -0.256, -0.256, -0.172, -0.226, -0.152, -0.640, 0.000, &
+      0.189,0.210,0.131,0.024,0.005,0.273,0.428,0.000, &
+      0.830,1.183,2.366,0.000,0.000,0.968,1.575,0.000 /
 !cmr_end
 TYPE (grid_config_rec_type) , INTENT (IN) :: config_flags
 
@@ -2102,7 +2102,7 @@ CASE ('VPRM_table_EUROPE')
   vprm_par=vprm_table_europe
 CASE ('VPRM_table_TROPICS')
   vprm_par=vprm_table_tropics
-CASE ('VPRM_table_ALPS')
+CASE ('VPRM_table_ALPS') ! cmr
   vprm_par=vprm_table_alps
 CASE DEFAULT
   CALL wrf_message("check vprm_opt in namelist.input")
