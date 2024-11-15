@@ -67,3 +67,10 @@ run/namelist.input.backup.2024-11-14_23_36_08
 run/namelist.input.backup.2024-11-14_23_41_09
 test/em_real/namelist.input
 
+log.compile_clc1
+log.compile_clc2
+log.compile_debug
+run/namelist.input.backup.2024-11-15_09_00_54
+run/namelist.input.backup.2024-11-15_11_35_29
+run/namelist.input.backup.2024-11-15_12_19_53
+run/namelist.input.backup.2024-11-15_12_32_09
