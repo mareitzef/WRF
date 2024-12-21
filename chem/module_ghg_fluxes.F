@@ -67,6 +67,8 @@ REAL, DIMENSION( ims:ime, 1,jms:jme, num_eghg_bio ), INTENT(IN ) :: eghg_bio
 INTEGER :: i,j,k
 REAL    :: conv_rho
 
+CHARACTER (LEN=128) :: message !cmr
+
 call wrf_debug(15,'add_ghg_fluxes')
 
 ! For both GHG options
@@ -81,7 +83,18 @@ DO j=jts,jte
 
       ! 2D biospheric fluxes:
       if (k==1) then
-         chem(i,1,j,p_co2_bio)= chem(i,1,j,p_co2_bio) + conv_rho* (eghg_bio(i,1,j,p_ebio_gee) + eghg_bio(i,1,j,p_ebio_res))   ! both uptake and release
+         ! cmr begin
+         ! chem(i,1,j,p_co2_bio)= chem(i,1,j,p_co2_bio) + conv_rho* (eghg_bio(i,1,j,p_ebio_gee) + eghg_bio(i,1,j,p_ebio_res))   ! both uptake and release
+         if ((chem(i,1,j,p_co2_bio) + conv_rho* (eghg_bio(i,1,j,p_ebio_gee) + eghg_bio(i,1,j,p_ebio_res))) < 1 ) then
+            write(message, '(" WARNING: CO2_BIO overwritten with CO2_BCK at i=", I6, ", j=", I6, ". Original value was ", F8.2)') i, j, chem(i,1,j,p_co2_bio)
+            CALL wrf_message(message)
+            write(message, '(" WARNING: eghg_bio_gee=", F10.2, ", eghg_bio_res=", F9.2)') eghg_bio(i,1,j,p_ebio_gee), eghg_bio(i,1,j,p_ebio_res)
+            CALL wrf_message(message)
+            chem(i,1,j,p_co2_bio)= 1
+         else 
+            chem(i,1,j,p_co2_bio)= chem(i,1,j,p_co2_bio) + conv_rho* (eghg_bio(i,1,j,p_ebio_gee) + eghg_bio(i,1,j,p_ebio_res))   ! both uptake and release
+         end if          
+         ! cmr end 
          chem(i,1,j,p_co2_oce)= chem(i,1,j,p_co2_oce) + conv_rho* ebio_co2oce(i,j)
       end if
 
@@ -119,9 +132,9 @@ SUBROUTINE VPRM                 (  ids,ide, jds,jde,                 &
                                    its,ite, jts,jte,                 &
 
                                    vprm_in,rad0, lambda,            &
-                                   alpha, RESP0,                    &
-                                 !cmr  T2,RAD, eghg_bio                )
+                                   alpha, RESP0,                    &                                 
                                  T2,RAD, eghg_bio, config_flags        ) !cmr
+                                 !cmr  T2,RAD, eghg_bio                )
 !IMPLICIT NONE
 
 USE module_configure,only:  grid_config_rec_type !cmr
@@ -141,6 +154,7 @@ REAL, DIMENSION( ims:ime, 1,jms:jme, num_eghg_bio ), INTENT(INOUT ) ::  eghg_bio
 
 REAL, DIMENSION(num_vprm_in) :: rad0, lambda, alpha, RESP0
 REAL  ::  a1,a2,a3,Tair,Tscale,Wscale,Pscale,GEE_frac,RESP_frac,evithresh,RADscale
+
 ! VPRM vegetation classes:
 !1-Evergreen c
 !2-Deciduous

@@ -1105,7 +1105,12 @@ CONTAINS
 ! USE ROOT DISTRIBUTION AS WEIGHTING FACTOR
 !      PART(1) = RTDIS(1) * GX
 ! ----------------------------------------------------------------------
-      PART (1) = (ZSOIL (1)/ ZSOIL (NROOT)) * GX
+      IF (NROOT == 0) THEN    ! cmr
+         PART (1) = GX        ! cmr
+      ELSE                    ! cmr
+         PART (1) = (ZSOIL (1)/ ZSOIL (NROOT)) * GX
+      END IF                  ! cmr
+
       DO K = 2,NROOT
          GX = (SMC (K) - SMCWLT) / (SMCREF - SMCWLT)
          IF (GX >  1.) GX = 1.
@@ -4413,7 +4418,12 @@ IF ( OPT_THCND == 1 .OR. ( OPT_THCND == 2 .AND. (SOILTYP /= 4 .AND. SOILTYP /= 3
          SGX = SGX + GX (I)
       END DO
 
-      SGX = SGX / NROOT
+      IF (NROOT == 0) THEN    ! cmr
+         SGX = SGX       ! cmr
+      ELSE                    ! cmr
+         SGX = SGX / NROOT
+      END IF                  ! cmr
+      
       DENOM = 0.
       DO I = 1,NROOT
          RTX = RTDIS (I) + GX (I) - SGX

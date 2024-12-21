@@ -1628,12 +1628,18 @@ ghg_block: IF (config_flags%gas_ic_opt==GAS_IC_GHG) THEN
        do j=jts,jte
         do k=kts,kte
          do i=its,ite
-            chem(i,k,j,p_co2_bck)=380.  ! background CO2 tracer
-            chem(i,k,j,p_co2_bio)=380.  ! A user should subtract this from the output fields!
-            chem(i,k,j,p_co2_oce)=380.   ! A user should subtract this from the output fields!
-            chem(i,k,j,p_co2_ant)=380.   ! A user should subtract this from the output fields!
-            chem(i,k,j,p_co2_tst)=380.   ! A user should subtract this from the output fields!
-
+         !cmr begin
+            !chem(i,k,j,p_co2_bck)=380.  ! background CO2 tracer
+            !chem(i,k,j,p_co2_bio)=380.  ! A user should subtract this from the output fields!
+            !chem(i,k,j,p_co2_oce)=380.   ! A user should subtract this from the output fields!
+            !chem(i,k,j,p_co2_ant)=380.   ! A user should subtract this from the output fields!
+            !chem(i,k,j,p_co2_tst)=380.   ! A user should subtract this from the output fields!
+            chem(i,k,j,p_co2_bck)=400.  ! background CO2 tracer
+            chem(i,k,j,p_co2_bio)=400.  ! A user should subtract this from the output fields!
+            chem(i,k,j,p_co2_oce)=400.   ! A user should subtract this from the output fields!
+            chem(i,k,j,p_co2_ant)=400.   ! A user should subtract this from the output fields!
+            chem(i,k,j,p_co2_tst)=400.   ! A user should subtract this from the output fields!
+         !cmr end
             if (p_co2_bbu>1) chem(i,k,j,p_co2_bbu)=380.  ! A user should subtract this from the output fields!
 
          enddo
