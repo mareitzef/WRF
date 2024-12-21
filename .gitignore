@@ -58,3 +58,4 @@ log.compile_clc2
 log.compile_debug
 run/namelist.input.backup.*
 log.compile*
+et --hard 5fc4e082
