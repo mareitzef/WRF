@@ -99,7 +99,7 @@ num_land_cat             = 44,
 
 &chem 
 chem_opt 		        = 16, 16, 16,
-vprm_opt 		        = 'VPRM_table_ALPS', 'VPRM_table_ALPS', 'VPRM_table_ALPS',
+vprm_opt 		        = 'VPRM_table_MULTI', 'VPRM_table_ALPS', 'VPRM_table_ALPS',
 gas_drydep_opt  	    = 0, 0, 0,
 gas_ic_opt  		    = 16, 16, 16,
 emiss_opt  		        = 16, 16, 16,

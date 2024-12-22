@@ -59,3 +59,6 @@ log.compile_debug
 run/namelist.input.backup.*
 log.compile*
 et --hard 5fc4e082
+external/io_int/diffwrf
+external/io_int/test_io_idx
+external/io_netcdf/diffwrf

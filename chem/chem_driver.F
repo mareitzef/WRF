@@ -871,8 +871,14 @@
          ! stuff for aircraft emissions
               emis_aircraft,                                                               &
          ! stuff for the GHG fluxes
-              vprm_in,grid%rad_vprm,grid%lambda_vprm,                                      &
-              grid%alpha_vprm,grid%resp_vprm,grid%xtime,                                   &
+              !cmr begin: vprm_in,grid%rad_vprm,grid%lambda_vprm,                           &
+              !cmr grid%alpha_vprm,grid%resp_vprm,grid%xtime,                               &
+              vprm_in,                                                                     &
+              grid%rad_vprm,grid%lambda_vprm, grid%alpha_vprm,grid%resp_vprm,              &
+              grid%rad_vprm_2,grid%lambda_vprm_2, grid%alpha_vprm_2,grid%resp_vprm_2,      &
+              grid%rad_vprm_3,grid%lambda_vprm_3, grid%alpha_vprm_3,grid%resp_vprm_3,      &
+              grid%rad_vprm_4,grid%lambda_vprm_4, grid%alpha_vprm_4,grid%resp_vprm_4,      &
+              grid%xtime,                                                                  & !cmr end 
               grid%TSLB, wet_in,grid%RAINC,grid%RAINNC,                                    &
               grid%potevp,grid%SFCEVP,grid%LU_INDEX,                                       &
               grid%biomt_par,grid%emit_par,grid%ebio_co2oce,                               &

@@ -600,7 +600,21 @@ ENDIF
 !write(6,*)'config_flags%chem_opt, CO2_TRACER', config_flags%chem_opt, CO2_TRACER
 
 if  ( config_flags%chem_opt==CO2_TRACER .OR. config_flags%chem_opt==GHG_TRACER )   then
-     call VPRM_par_initialize ( grid%rad_vprm, grid%lambda_vprm, grid%alpha_vprm, grid%resp_vprm, config_flags )
+     !cmr begin
+     ! call VPRM_par_initialize ( grid%rad_vprm, grid%lambda_vprm, grid%alpha_vprm, grid%resp_vprm, config_flags )
+
+      sel_pars: SELECT CASE(config_flags%vprm_opt)
+      CASE ('VPRM_table_MULTI') ! cmr
+      call VPRM_par_initialize_multi ( grid%rad_vprm, grid%lambda_vprm, grid%alpha_vprm, grid%resp_vprm, &
+         grid%rad_vprm_2, grid%lambda_vprm_2, grid%alpha_vprm_2, grid%resp_vprm_2, &
+         grid%rad_vprm_3, grid%lambda_vprm_3, grid%alpha_vprm_3, grid%resp_vprm_3, &
+         grid%rad_vprm_4, grid%lambda_vprm_4, grid%alpha_vprm_4, grid%resp_vprm_4, &
+         config_flags )
+      CASE DEFAULT
+      call VPRM_par_initialize ( grid%rad_vprm, grid%lambda_vprm, grid%alpha_vprm, grid%resp_vprm, config_flags )
+      END SELECT sel_pars
+     !cmr end
+
      call wrf_message("Warning: the VPRM parameters may need to be optimized depending on the season, year and region!")
      call wrf_message("The parameters provided here should be used for testing purposes only!")
 end if
@@ -1636,6 +1650,9 @@ ghg_block: IF (config_flags%gas_ic_opt==GAS_IC_GHG) THEN
             !chem(i,k,j,p_co2_tst)=380.   ! A user should subtract this from the output fields!
             chem(i,k,j,p_co2_bck)=400.  ! background CO2 tracer
             chem(i,k,j,p_co2_bio)=400.  ! A user should subtract this from the output fields!
+            chem(i,k,j,p_co2_bio_2)=400.  ! A user should subtract this from the output fields!cmr
+            chem(i,k,j,p_co2_bio_3)=400.  ! A user should subtract this from the output fields!cmr
+            chem(i,k,j,p_co2_bio_4)=400.  ! A user should subtract this from the output fields!cmr
             chem(i,k,j,p_co2_oce)=400.   ! A user should subtract this from the output fields!
             chem(i,k,j,p_co2_ant)=400.   ! A user should subtract this from the output fields!
             chem(i,k,j,p_co2_tst)=400.   ! A user should subtract this from the output fields!
@@ -2075,7 +2092,8 @@ USE module_configure,only:  grid_config_rec_type
 IMPLICIT NONE
 
 REAL, DIMENSION(8), INTENT(OUT) ::  rad_vprm, lambda_vprm, alpha_vprm, resp_vprm
-REAL, DIMENSION(8,4)    ::  vprm_table_us, vprm_table_europe, vprm_table_tropics, vprm_par, vprm_table_alps
+!cmr REAL, DIMENSION(8,4)    ::  vprm_table_us, vprm_table_europe, vprm_table_tropics, vprm_par
+REAL, DIMENSION(8,4)    ::  vprm_table_us, vprm_table_europe, vprm_table_tropics, vprm_table_alps, vprm_par, vprm_par_2, vprm_par_3, vprm_par_4
 
 DATA vprm_table_us &
      / 261.0, 324.0, 206.0, 363.0, 682.0, 757.0, 157.0, 0.0, &
@@ -2095,13 +2113,7 @@ DATA vprm_table_tropics &
       -0.2101, -0.1729, -0.2555, -0.0874, -0.1141, -0.1209, -0.1334, 0.0000, &
        0.1601, 0.3258, 0.3422, 0.0239, 0.0049, 0.0043, 0.0269, 0.0000, &
        0., 0., 0., 0., 0., 0., 0., 0. /
-!cmr: add my own parameters:
-DATA vprm_table_alps &
-     / 232.299, 235.822, 242.245, 718.812, 1350.495, 676.207, 292.876, 0.000, & !cmr my values divided by 0.505
-      -0.376, -0.256, -0.256, -0.172, -0.226, -0.152, -0.640, 0.000, &
-      0.189,0.210,0.131,0.024,0.005,0.273,0.428,0.000, &
-      0.830,1.183,2.366,0.000,0.000,0.968,1.575,0.000 /
-!cmr_end
+
 TYPE (grid_config_rec_type) , INTENT (IN) :: config_flags
 
 sel_pars: SELECT CASE(config_flags%vprm_opt)
@@ -2111,8 +2123,6 @@ CASE ('VPRM_table_EUROPE')
   vprm_par=vprm_table_europe
 CASE ('VPRM_table_TROPICS')
   vprm_par=vprm_table_tropics
-CASE ('VPRM_table_ALPS') ! cmr
-  vprm_par=vprm_table_alps
 CASE DEFAULT
   CALL wrf_message("check vprm_opt in namelist.input")
   CALL wrf_error_fatal ( "NO PARAMETER TABLE IS INCLUDED FOR THIS VPRM TABLE OPTION!")
@@ -2124,6 +2134,79 @@ alpha_vprm=   vprm_par(1:8,3)
 resp_vprm=    vprm_par(1:8,4)
 
 END SUBROUTINE VPRM_par_initialize
+
+SUBROUTINE VPRM_par_initialize_multi( &
+    rad_vprm, lambda_vprm, alpha_vprm, resp_vprm, &
+    rad_vprm_2, lambda_vprm_2, alpha_vprm_2, resp_vprm_2, &
+    rad_vprm_3, lambda_vprm_3, alpha_vprm_3, resp_vprm_3, &
+    rad_vprm_4, lambda_vprm_4, alpha_vprm_4, resp_vprm_4, &
+    config_flags)
+
+USE module_configure,only:  grid_config_rec_type
+
+! VPRM parameters initialization section
+! modified version to use multiple ecosystem fluxes parallely - 22.12.24 Matthias Reif UIBK
+IMPLICIT NONE
+
+REAL, DIMENSION(8), INTENT(OUT) ::  rad_vprm, lambda_vprm, alpha_vprm, resp_vprm
+REAL, DIMENSION(8), INTENT(OUT) ::  rad_vprm_2, lambda_vprm_2, alpha_vprm_2, resp_vprm_2
+REAL, DIMENSION(8), INTENT(OUT) ::  rad_vprm_3, lambda_vprm_3, alpha_vprm_3, resp_vprm_3
+REAL, DIMENSION(8), INTENT(OUT) ::  rad_vprm_4, lambda_vprm_4, alpha_vprm_4, resp_vprm_4
+REAL, DIMENSION(8,4)            ::  vprm_table_multi, vprm_table_multi_2, vprm_table_multi_3, vprm_table_multi_4
+REAL, DIMENSION(8,4)            ::  vprm_par, vprm_par_2, vprm_par_3, vprm_par_4
+
+TYPE(grid_config_rec_type), INTENT(IN) :: config_flags
+
+DATA vprm_table_multi &
+     / 232.299, 235.822, 242.245, 718.812, 1350.495, 676.207, 292.876, 0.000, & !cmr my values divided by 0.505
+      -0.376, -0.256, -0.256, -0.172, -0.226, -0.152, -0.640, 0.000, &
+      0.189,0.210,0.131,0.024,0.005,0.273,0.428,0.000, &
+      0.830,1.183,2.366,0.000,0.000,0.968,1.575,0.000 /
+
+DATA vprm_table_multi_2 &
+     / 232, 235, 242, 718, 1350, 676, 292, 0.000, & !cmr my values divided by 0.505
+      -0.376, -0.256, -0.256, -0.172, -0.226, -0.152, -0.640, 0.000, &
+      0.189,0.210,0.131,0.024,0.005,0.273,0.428,0.000, &
+      0.830,1.183,2.366,0.000,0.000,0.968,1.575,0.000 /
+
+DATA vprm_table_multi_3 &
+     / 232.299, 235.822, 242.245, 718.812, 1350.495, 676.207, 292.876, 0.000, & !cmr my values divided by 0.505
+      -0.376, -0.256, -0.256, -0.172, -0.226, -0.152, -0.640, 0.000, &
+      0.189,0.210,0.131,0.024,0.005,0.273,0.428,0.000, &
+      0.8,1.1,2.3,0.0,0.0,0.9,1.5,0.0 /
+
+DATA vprm_table_multi_4 &
+     / 232.299, 235.822, 242.245, 718.812, 1350.495, 676.207, 292.876, 0.000, & !cmr my values divided by 0.505
+      -0.3, -0.2, -0.2, -0.1, -0.2, -0.1, -0.6, 0.000, &
+      0.189,0.210,0.131,0.024,0.005,0.273,0.428,0.000, &
+      0.830,1.183,2.366,0.000,0.000,0.968,1.575,0.000 /
+
+vprm_par=vprm_table_multi
+vprm_par_2=vprm_table_multi_2
+vprm_par_3=vprm_table_multi_3
+vprm_par_4=vprm_table_multi_4
+
+rad_vprm=     vprm_par(1:8,1)
+lambda_vprm=  vprm_par(1:8,2)
+alpha_vprm=   vprm_par(1:8,3)
+resp_vprm=    vprm_par(1:8,4)
+
+rad_vprm_2=     vprm_par_2(1:8,1)
+lambda_vprm_2=  vprm_par_2(1:8,2)
+alpha_vprm_2=   vprm_par_2(1:8,3)
+resp_vprm_2=    vprm_par_2(1:8,4)
+
+rad_vprm_3=     vprm_par_3(1:8,1)
+lambda_vprm_3=  vprm_par_3(1:8,2)
+alpha_vprm_3=   vprm_par_3(1:8,3)
+resp_vprm_3=    vprm_par_3(1:8,4)
+
+rad_vprm_4=     vprm_par_4(1:8,1)
+lambda_vprm_4=  vprm_par_4(1:8,2)
+alpha_vprm_4=   vprm_par_4(1:8,3)
+resp_vprm_4=    vprm_par_4(1:8,4)
+
+END SUBROUTINE VPRM_par_initialize_multi
 !******************************************************************************
 !
 SUBROUTINE termite_initialize( biom,emch4,config_flags)

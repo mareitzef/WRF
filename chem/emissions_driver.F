@@ -70,7 +70,11 @@ CONTAINS
          ! stuff for aircraft emissions
          emis_aircraft,                                                    &
          ! stuff for GHG fluxes
+         !cmr begin: vprm_in,rad_vprm,lambda_vprm,alpha_vprm,resp_vprm,               &
          vprm_in,rad_vprm,lambda_vprm,alpha_vprm,resp_vprm,               &
+         rad_vprm_2,lambda_vprm_2,alpha_vprm_2,resp_vprm_2,               &
+         rad_vprm_3,lambda_vprm_3,alpha_vprm_3,resp_vprm_3,               &
+         rad_vprm_4,lambda_vprm_4,alpha_vprm_4,resp_vprm_4,               & !cmr end
          xtime,tslb,wet_in,rainc,rainnc,potevp,sfcevp,lu_index,            &
          biomt_par,emit_par,ebio_co2oce,eghg_bio,                          &
          seas_flux,                                                        &
@@ -327,6 +331,9 @@ CONTAINS
       REAL, DIMENSION(ims:ime, jms:jme), INTENT(OUT)   :: seas_flux
 ! CO2
       REAL, DIMENSION(8) :: rad_vprm,lambda_vprm,alpha_vprm,resp_vprm
+      REAL, DIMENSION(8) :: rad_vprm_2,lambda_vprm_2,alpha_vprm_2,resp_vprm_2 !cmr
+      REAL, DIMENSION(8) :: rad_vprm_3,lambda_vprm_3,alpha_vprm_3,resp_vprm_3 !cmr
+      REAL, DIMENSION(8) :: rad_vprm_4,lambda_vprm_4,alpha_vprm_4,resp_vprm_4 !cmr
 ! CH4
       REAL, DIMENSION(14), INTENT(IN) :: biomt_par, emit_par
       REAL, DIMENSION(ims:ime,1,jms:jme,num_wet_in), INTENT(IN)  :: wet_in
@@ -1088,8 +1095,33 @@ CONTAINS
                          vprm_in,rad_vprm,lambda_vprm,       &
                          alpha_vprm,resp_vprm,               &
                          T2,swdown,                          &                         
-                         eghg_bio, config_flags        ) !cmr
-                         !cmr eghg_bio                            )
+                         eghg_bio,p_ebio_gee,p_ebio_res,config_flags) !cmr eghg_bio
+!cmr begin 
+! Update the biospheric CO2 fluxes for parallel parameters
+   CALL VPRM(            ids,ide, jds,jde,                   &
+                         ims,ime, jms,jme,                   &
+                         its,ite, jts,jte,                   &
+
+                         vprm_in,rad_vprm_2,lambda_vprm_2,       &
+                         alpha_vprm_2,resp_vprm_2,               &
+                         T2,swdown,                          &                         
+                         eghg_bio,p_ebio_gee_2,p_ebio_res_2,config_flags) !cmr eghg_bio
+   CALL VPRM(            ids,ide, jds,jde,                   &
+                         ims,ime, jms,jme,                   &
+                         its,ite, jts,jte,                   &
+
+                         vprm_in,rad_vprm_3,lambda_vprm_3,       &
+                         alpha_vprm_3,resp_vprm_3,               &
+                         T2,swdown,                          &                         
+                         eghg_bio,p_ebio_gee_3,p_ebio_res_3,config_flags) !cmr eghg_bio
+   CALL VPRM(            ids,ide, jds,jde,                   &
+                         ims,ime, jms,jme,                   &
+                         its,ite, jts,jte,                   &
+
+                         vprm_in,rad_vprm_4,lambda_vprm_4,       &
+                         alpha_vprm_4,resp_vprm_4,               &
+                         T2,swdown,                          &                         
+                         eghg_bio,p_ebio_gee_4,p_ebio_res_4,config_flags) !cmr eghg_bio                         
 
   ! Update the biospheric CH4 fluxes if the GHG option is called
    if (p_ch4_bio .GT. 1) then

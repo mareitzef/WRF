@@ -83,19 +83,16 @@ DO j=jts,jte
 
       ! 2D biospheric fluxes:
       if (k==1) then
-         ! cmr begin
+         !cmr begin
          ! chem(i,1,j,p_co2_bio)= chem(i,1,j,p_co2_bio) + conv_rho* (eghg_bio(i,1,j,p_ebio_gee) + eghg_bio(i,1,j,p_ebio_res))   ! both uptake and release
-         if ((chem(i,1,j,p_co2_bio) + conv_rho* (eghg_bio(i,1,j,p_ebio_gee) + eghg_bio(i,1,j,p_ebio_res))) < 1 ) then
-            write(message, '(" WARNING: CO2_BIO overwritten with CO2_BCK at i=", I6, ", j=", I6, ". Original value was ", F8.2)') i, j, chem(i,1,j,p_co2_bio)
-            CALL wrf_message(message)
-            write(message, '(" WARNING: eghg_bio_gee=", F10.2, ", eghg_bio_res=", F9.2)') eghg_bio(i,1,j,p_ebio_gee), eghg_bio(i,1,j,p_ebio_res)
-            CALL wrf_message(message)
-            chem(i,1,j,p_co2_bio)= 1
-         else 
-            chem(i,1,j,p_co2_bio)= chem(i,1,j,p_co2_bio) + conv_rho* (eghg_bio(i,1,j,p_ebio_gee) + eghg_bio(i,1,j,p_ebio_res))   ! both uptake and release
-         end if          
-         ! cmr end 
+         ! chem(i,1,j,p_co2_oce)= chem(i,1,j,p_co2_oce) + conv_rho* ebio_co2oce(i,j)
+
+         chem(i,1,j,p_co2_bio)= chem(i,1,j,p_co2_bio) + conv_rho* (eghg_bio(i,1,j,p_ebio_gee) + eghg_bio(i,1,j,p_ebio_res)) 
+         chem(i,1,j,p_co2_bio_2)= chem(i,1,j,p_co2_bio_2) + conv_rho* (eghg_bio(i,1,j,p_ebio_gee_2) + eghg_bio(i,1,j,p_ebio_gee_2)) 
+         chem(i,1,j,p_co2_bio_3)= chem(i,1,j,p_co2_bio_3) + conv_rho* (eghg_bio(i,1,j,p_ebio_gee_3) + eghg_bio(i,1,j,p_ebio_gee_3)) 
+         chem(i,1,j,p_co2_bio_4)= chem(i,1,j,p_co2_bio_4) + conv_rho* (eghg_bio(i,1,j,p_ebio_gee_4) + eghg_bio(i,1,j,p_ebio_gee_4)) 
          chem(i,1,j,p_co2_oce)= chem(i,1,j,p_co2_oce) + conv_rho* ebio_co2oce(i,j)
+         !cmr end
       end if
 
       ENDDO
@@ -133,7 +130,7 @@ SUBROUTINE VPRM                 (  ids,ide, jds,jde,                 &
 
                                    vprm_in,rad0, lambda,            &
                                    alpha, RESP0,                    &                                 
-                                 T2,RAD, eghg_bio, config_flags        ) !cmr
+                                 T2,RAD, eghg_bio,p_ebio_gee_t,p_ebio_res_t, config_flags        ) !cmr
                                  !cmr  T2,RAD, eghg_bio                )
 !IMPLICIT NONE
 
@@ -143,6 +140,8 @@ TYPE (grid_config_rec_type) , INTENT (IN) :: config_flags !cmr
 INTEGER,  INTENT(IN   )   ::  ids,ide, jds,jde, &
                               ims,ime, jms,jme, &
                               its,ite, jts,jte
+
+INTEGER,  INTENT(IN   )   ::  p_ebio_gee_t,p_ebio_res_t !cmr
 INTEGER :: i,j,m
 
 REAL, PARAMETER :: const= 3.6e+3 ! For unit conversion from mmol/m^2/s to mol/km2/hr
@@ -179,7 +178,7 @@ CASE ('VPRM_table_EUROPE')
   DATA Topt   /20.,20.,20.,20.,20.,22.,18.,0./
 CASE ('VPRM_table_TROPICS')
   DATA Topt   /20.,20.,20.,20.,20.,22.,18.,0./
-CASE ('VPRM_table_ALPS') 
+CASE ('VPRM_table_MULTI') 
   DATA Topt   /18.111,26.623,25.282,20.000,20.000,22.159,23.282,0.000/ !cmr: optimized values
 CASE DEFAULT
   CALL wrf_message("check vprm_opt in namelist.input")
@@ -246,8 +245,8 @@ DO i=its,min(ite,ide-1)
 
    ENDDO veg_frac_loop
    
-   eghg_bio(i,1,j,p_ebio_gee)= min(0.0,const*GEE_frac)
-   eghg_bio(i,1,j,p_ebio_res)= max(0.0,const*RESP_frac)
+   eghg_bio(i,1,j,p_ebio_gee_t)= min(0.0,const*GEE_frac)
+   eghg_bio(i,1,j,p_ebio_res_t)= max(0.0,const*RESP_frac)
 
   ENDDO
   ENDDO
