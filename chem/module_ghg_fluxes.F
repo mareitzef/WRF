@@ -87,10 +87,10 @@ DO j=jts,jte
          ! chem(i,1,j,p_co2_bio)= chem(i,1,j,p_co2_bio) + conv_rho* (eghg_bio(i,1,j,p_ebio_gee) + eghg_bio(i,1,j,p_ebio_res))   ! both uptake and release
          ! chem(i,1,j,p_co2_oce)= chem(i,1,j,p_co2_oce) + conv_rho* ebio_co2oce(i,j)
 
-         chem(i,1,j,p_co2_bio)= chem(i,1,j,p_co2_bio) + conv_rho* (eghg_bio(i,1,j,p_ebio_gee) + eghg_bio(i,1,j,p_ebio_res)) 
-         chem(i,1,j,p_co2_bio_2)= chem(i,1,j,p_co2_bio_2) + conv_rho* (eghg_bio(i,1,j,p_ebio_gee_2) + eghg_bio(i,1,j,p_ebio_gee_2)) 
-         chem(i,1,j,p_co2_bio_3)= chem(i,1,j,p_co2_bio_3) + conv_rho* (eghg_bio(i,1,j,p_ebio_gee_3) + eghg_bio(i,1,j,p_ebio_gee_3)) 
-         chem(i,1,j,p_co2_bio_4)= chem(i,1,j,p_co2_bio_4) + conv_rho* (eghg_bio(i,1,j,p_ebio_gee_4) + eghg_bio(i,1,j,p_ebio_gee_4)) 
+         chem(i,1,j,p_co2_bio)= chem(i,1,j,p_co2_bio)     + conv_rho* (eghg_bio(i,1,j,p_ebio_gee)   + eghg_bio(i,1,j,p_ebio_res)) 
+         chem(i,1,j,p_co2_bio_2)= chem(i,1,j,p_co2_bio_2) + conv_rho* (eghg_bio(i,1,j,p_ebio_gee_2) + eghg_bio(i,1,j,p_ebio_res_2)) 
+         chem(i,1,j,p_co2_bio_3)= chem(i,1,j,p_co2_bio_3) + conv_rho* (eghg_bio(i,1,j,p_ebio_gee_3) + eghg_bio(i,1,j,p_ebio_res_3)) 
+         chem(i,1,j,p_co2_bio_4)= chem(i,1,j,p_co2_bio_4) + conv_rho* (eghg_bio(i,1,j,p_ebio_gee_4) + eghg_bio(i,1,j,p_ebio_res_4)) 
          chem(i,1,j,p_co2_oce)= chem(i,1,j,p_co2_oce) + conv_rho* ebio_co2oce(i,j)
          !cmr end
       end if

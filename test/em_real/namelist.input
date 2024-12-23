@@ -9,7 +9,7 @@ start_day                           = 01,
 start_hour                          = 00,  
 end_year                            = 2012, 
 end_month                           = 07, 
-end_day                             = 02,  
+end_day                             = 08,  
 end_hour                            = 00, 
 interval_seconds                    = 21600
 input_from_file                     = .true., .true., .true.,
@@ -31,7 +31,7 @@ force_use_old_data                  = .true.
 /
 
 &domains
-time_step                           = 240,
+time_step                           = 162,
 time_step_fract_num                 = 0,
 time_step_fract_den                 = 1,
 max_dom                             = 1,
@@ -105,7 +105,7 @@ gas_ic_opt  		    = 16, 16, 16,
 emiss_opt  		        = 16, 16, 16,
 bio_emiss_opt  	        = 16, 16, 16,
 emiss_inpt_opt  	    = 16, 16, 16,
-chem_in_opt  		    = 1, 1, 1, ! set to 0 for real.exe 
+chem_in_opt       = 1,1,1,
 chem_conv_tr 		    = 0, 0, 0,
 vertmix_onoff       	= 1, 0, 0,
 aer_ra_feedback  	    = 0, 0, 0,

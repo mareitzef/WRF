@@ -2152,36 +2152,36 @@ REAL, DIMENSION(8), INTENT(OUT) ::  rad_vprm, lambda_vprm, alpha_vprm, resp_vprm
 REAL, DIMENSION(8), INTENT(OUT) ::  rad_vprm_2, lambda_vprm_2, alpha_vprm_2, resp_vprm_2
 REAL, DIMENSION(8), INTENT(OUT) ::  rad_vprm_3, lambda_vprm_3, alpha_vprm_3, resp_vprm_3
 REAL, DIMENSION(8), INTENT(OUT) ::  rad_vprm_4, lambda_vprm_4, alpha_vprm_4, resp_vprm_4
-REAL, DIMENSION(8,4)            ::  vprm_table_multi, vprm_table_multi_2, vprm_table_multi_3, vprm_table_multi_4
+REAL, DIMENSION(8,4)            ::  vprm_table_europe, vprm_table_multi_2, vprm_table_multi_3, vprm_table_multi_4
 REAL, DIMENSION(8,4)            ::  vprm_par, vprm_par_2, vprm_par_3, vprm_par_4
 
 TYPE(grid_config_rec_type), INTENT(IN) :: config_flags
 
-DATA vprm_table_multi &
-     / 232.299, 235.822, 242.245, 718.812, 1350.495, 676.207, 292.876, 0.000, & !cmr my values divided by 0.505
-      -0.376, -0.256, -0.256, -0.172, -0.226, -0.152, -0.640, 0.000, &
-      0.189,0.210,0.131,0.024,0.005,0.273,0.428,0.000, &
-      0.830,1.183,2.366,0.000,0.000,0.968,1.575,0.000 /
+DATA vprm_table_europe &
+     / 270.2, 271.4, 236.6, 363.0, 682.0, 690.3, 229.1, 0.0, &
+      -0.3084, -0.1955, -0.2856, -0.0874, -0.1141, -0.1350, -0.1748, 0.0000, &
+       0.1797, 0.1495, 0.2258, 0.0239, 0.0049, 0.1699, 0.0881, 0.0000, &
+       0.8800, 0.8233, 0.4321, 0.0000, 0.0000, -0.0144, 0.5843, 0.0000 /
 
 DATA vprm_table_multi_2 &
-     / 232, 235, 242, 718, 1350, 676, 292, 0.000, & !cmr my values divided by 0.505
+     / 232.299, 235.822, 242.245, 718.812, 1350.495, 676.207, 292.876, 0.000, & !cmr my values divided by 0.505
       -0.376, -0.256, -0.256, -0.172, -0.226, -0.152, -0.640, 0.000, &
       0.189,0.210,0.131,0.024,0.005,0.273,0.428,0.000, &
       0.830,1.183,2.366,0.000,0.000,0.968,1.575,0.000 /
 
-DATA vprm_table_multi_3 &
-     / 232.299, 235.822, 242.245, 718.812, 1350.495, 676.207, 292.876, 0.000, & !cmr my values divided by 0.505
-      -0.376, -0.256, -0.256, -0.172, -0.226, -0.152, -0.640, 0.000, &
-      0.189,0.210,0.131,0.024,0.005,0.273,0.428,0.000, &
-      0.8,1.1,2.3,0.0,0.0,0.9,1.5,0.0 /
+DATA vprm_table_multi_3 & !cmr 20% increase
+     / 278.4, 282.0, 290.4, 861.6, 1620.0, 811.2, 350.4, 0.000, &
+      -0.451, -0.307, -0.307, -0.206, -0.271, -0.182, -0.768, 0.000, &
+      0.226, 0.252, 0.157, 0.029, 0.006, 0.327, 0.513, 0.000, &
+      0.996, 1.419, 2.839, 0.000, 0.000, 1.161, 1.890, 0.000 /
 
-DATA vprm_table_multi_4 &
-     / 232.299, 235.822, 242.245, 718.812, 1350.495, 676.207, 292.876, 0.000, & !cmr my values divided by 0.505
-      -0.3, -0.2, -0.2, -0.1, -0.2, -0.1, -0.6, 0.000, &
-      0.189,0.210,0.131,0.024,0.005,0.273,0.428,0.000, &
-      0.830,1.183,2.366,0.000,0.000,0.968,1.575,0.000 /
+DATA vprm_table_multi_4 & !cmr 20% decrease
+     / 185.6, 188.0, 193.6, 574.4, 1080.0, 540.8, 233.6, 0.000, &
+      -0.301, -0.205, -0.205, -0.138, -0.181, -0.122, -0.512, 0.000, &
+      0.151, 0.168, 0.105, 0.019, 0.004, 0.218, 0.342, 0.000, &
+      0.664, 0.946, 1.893, 0.000, 0.000, 0.774, 1.260, 0.000 /
 
-vprm_par=vprm_table_multi
+vprm_par=vprm_table_europe
 vprm_par_2=vprm_table_multi_2
 vprm_par_3=vprm_table_multi_3
 vprm_par_4=vprm_table_multi_4
