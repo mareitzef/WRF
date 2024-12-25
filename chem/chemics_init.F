@@ -609,6 +609,8 @@ if  ( config_flags%chem_opt==CO2_TRACER .OR. config_flags%chem_opt==GHG_TRACER )
          grid%rad_vprm_2, grid%lambda_vprm_2, grid%alpha_vprm_2, grid%resp_vprm_2, &
          grid%rad_vprm_3, grid%lambda_vprm_3, grid%alpha_vprm_3, grid%resp_vprm_3, &
          grid%rad_vprm_4, grid%lambda_vprm_4, grid%alpha_vprm_4, grid%resp_vprm_4, &
+         grid%rad_vprm_5, grid%lambda_vprm_5, grid%alpha_vprm_5, grid%resp_vprm_5, &
+         grid%rad_vprm_6, grid%lambda_vprm_6, grid%alpha_vprm_6, grid%resp_vprm_6, &         
          config_flags )
       CASE DEFAULT
       call VPRM_par_initialize ( grid%rad_vprm, grid%lambda_vprm, grid%alpha_vprm, grid%resp_vprm, config_flags )
@@ -1653,6 +1655,8 @@ ghg_block: IF (config_flags%gas_ic_opt==GAS_IC_GHG) THEN
             chem(i,k,j,p_co2_bio_2)=400.  ! A user should subtract this from the output fields!cmr
             chem(i,k,j,p_co2_bio_3)=400.  ! A user should subtract this from the output fields!cmr
             chem(i,k,j,p_co2_bio_4)=400.  ! A user should subtract this from the output fields!cmr
+            chem(i,k,j,p_co2_bio_5)=400.  ! A user should subtract this from the output fields!cmr
+            chem(i,k,j,p_co2_bio_6)=400.  ! A user should subtract this from the output fields!cmr
             chem(i,k,j,p_co2_oce)=400.   ! A user should subtract this from the output fields!
             chem(i,k,j,p_co2_ant)=400.   ! A user should subtract this from the output fields!
             chem(i,k,j,p_co2_tst)=400.   ! A user should subtract this from the output fields!
@@ -2092,8 +2096,7 @@ USE module_configure,only:  grid_config_rec_type
 IMPLICIT NONE
 
 REAL, DIMENSION(8), INTENT(OUT) ::  rad_vprm, lambda_vprm, alpha_vprm, resp_vprm
-!cmr REAL, DIMENSION(8,4)    ::  vprm_table_us, vprm_table_europe, vprm_table_tropics, vprm_par
-REAL, DIMENSION(8,4)    ::  vprm_table_us, vprm_table_europe, vprm_table_tropics, vprm_table_alps, vprm_par, vprm_par_2, vprm_par_3, vprm_par_4
+REAL, DIMENSION(8,4)    ::  vprm_table_us, vprm_table_europe, vprm_table_tropics, vprm_par
 
 DATA vprm_table_us &
      / 261.0, 324.0, 206.0, 363.0, 682.0, 757.0, 157.0, 0.0, &
@@ -2140,6 +2143,8 @@ SUBROUTINE VPRM_par_initialize_multi( &
     rad_vprm_2, lambda_vprm_2, alpha_vprm_2, resp_vprm_2, &
     rad_vprm_3, lambda_vprm_3, alpha_vprm_3, resp_vprm_3, &
     rad_vprm_4, lambda_vprm_4, alpha_vprm_4, resp_vprm_4, &
+    rad_vprm_5, lambda_vprm_5, alpha_vprm_5, resp_vprm_5, &
+    rad_vprm_6, lambda_vprm_6, alpha_vprm_6, resp_vprm_6, &
     config_flags)
 
 USE module_configure,only:  grid_config_rec_type
@@ -2152,39 +2157,62 @@ REAL, DIMENSION(8), INTENT(OUT) ::  rad_vprm, lambda_vprm, alpha_vprm, resp_vprm
 REAL, DIMENSION(8), INTENT(OUT) ::  rad_vprm_2, lambda_vprm_2, alpha_vprm_2, resp_vprm_2
 REAL, DIMENSION(8), INTENT(OUT) ::  rad_vprm_3, lambda_vprm_3, alpha_vprm_3, resp_vprm_3
 REAL, DIMENSION(8), INTENT(OUT) ::  rad_vprm_4, lambda_vprm_4, alpha_vprm_4, resp_vprm_4
-REAL, DIMENSION(8,4)            ::  vprm_table_europe, vprm_table_multi_2, vprm_table_multi_3, vprm_table_multi_4
-REAL, DIMENSION(8,4)            ::  vprm_par, vprm_par_2, vprm_par_3, vprm_par_4
+REAL, DIMENSION(8), INTENT(OUT) ::  rad_vprm_5, lambda_vprm_5, alpha_vprm_5, resp_vprm_5
+REAL, DIMENSION(8), INTENT(OUT) ::  rad_vprm_6, lambda_vprm_6, alpha_vprm_6, resp_vprm_6
+REAL, DIMENSION(8,4)            ::  vprm_table_multi_eu, vprm_table_multi_2, vprm_table_multi_3, vprm_table_multi_4, vprm_table_multi_5, vprm_table_multi_6
+REAL, DIMENSION(8,4)            ::  vprm_par, vprm_par_2, vprm_par_3, vprm_par_4, vprm_par_5, vprm_par_6
 
 TYPE(grid_config_rec_type), INTENT(IN) :: config_flags
 
-DATA vprm_table_europe &
+DATA vprm_table_multi_eu &
+! cmr parameters for all available station in grid and 4 more stations close by
+     / 232.299, 235.822, 242.245, 718.812, 1350.495, 676.207, 292.876, 0.000, & 
+      -0.376, -0.256, -0.256, -0.172, -0.226, -0.152, -0.640, 0.000, &
+      0.189,0.210,0.131,0.024,0.005,0.273,0.428,0.000, &
+      0.830,1.183,2.366,0.000,0.000,0.968,1.575,0.000 /
+
+DATA vprm_table_multi_2 & 
+! 2012 params for 
+! CH-Dav-ENF, IT-Isp-DBF, CH-Lae-MF, table_europe-SAV, table_europe-SHB, CH-Oe2-CRO, IT-Tor-GRA, OTHERS
+     / 418.393, 443.426, 363.083, 363.0, 682.0, 402.918, 698.177, 0.0, &
+      -0.236, -0.205, -0.182, -0.0874, -0.1141, -0.202, -0.302, 0.0, &
+      0.284, 0.368, 0.123, 0.0239, 0.0049, 0.288, 0.193, 0.0, &
+      0.545, 0.348, 2.554, 0.0, 0.0, 1.146, 1.485, 0.0 /
+
+DATA vprm_table_multi_3 & 
+! added: DE-Lkb-ENF,  IT-MBo-GRA, 
+     / 191.804, 443.426, 363.083, 363.0, 682.0, 402.918, 445.598, 0.0, &
+      -0.236, -0.205, -0.182, -0.0874, -0.1141, -0.202, -0.549, 0.0, &
+      0.190, 0.368, 0.123, 0.0239, 0.0049, 0.288, 0.404, 0.0, &
+      1.054, 0.348, 2.554, 0.0, 0.0, 1.146, 2.454, 0.0 /
+
+DATA vprm_table_multi_4 & 
+! added: IT-Lav-ENF, AT-Neu-GRA
+     / 486.815, 443.426, 363.083, 363.0, 682.0, 402.918, 268.058, 0.0, &
+      -0.227, -0.205, -0.182, -0.0874, -0.1141, -0.202, -0.722, 0.0, &
+      0.135, 0.368, 0.123, 0.0239, 0.0049, 0.288, 0.500, 0.0, &
+      0.010, 0.348, 2.554, 0.0, 0.0, 1.146, 4.101, 0.0 /
+
+DATA vprm_table_multi_5 & 
+! added: 
+     / 269.109, 235.822, 242.245, 718.812, 1350.495, 676.207, 292.876, 0.000, & 
+      -0.255, -0.256, -0.256, -0.172, -0.226, -0.152, -0.640, 0.000, &
+      0.107,0.210,0.131,0.024,0.005,0.273,0.428,0.000, &
+      1.829,1.183,2.366,0.000,0.000,0.968,1.575,0.000 /
+
+DATA vprm_table_multi_6 & 
+! reference values from default vprm_table_europe
      / 270.2, 271.4, 236.6, 363.0, 682.0, 690.3, 229.1, 0.0, &
       -0.3084, -0.1955, -0.2856, -0.0874, -0.1141, -0.1350, -0.1748, 0.0000, &
        0.1797, 0.1495, 0.2258, 0.0239, 0.0049, 0.1699, 0.0881, 0.0000, &
        0.8800, 0.8233, 0.4321, 0.0000, 0.0000, -0.0144, 0.5843, 0.0000 /
 
-DATA vprm_table_multi_2 &
-     / 232.299, 235.822, 242.245, 718.812, 1350.495, 676.207, 292.876, 0.000, & !cmr my values divided by 0.505
-      -0.376, -0.256, -0.256, -0.172, -0.226, -0.152, -0.640, 0.000, &
-      0.189,0.210,0.131,0.024,0.005,0.273,0.428,0.000, &
-      0.830,1.183,2.366,0.000,0.000,0.968,1.575,0.000 /
-
-DATA vprm_table_multi_3 & !cmr 20% increase
-     / 278.4, 282.0, 290.4, 861.6, 1620.0, 811.2, 350.4, 0.000, &
-      -0.451, -0.307, -0.307, -0.206, -0.271, -0.182, -0.768, 0.000, &
-      0.226, 0.252, 0.157, 0.029, 0.006, 0.327, 0.513, 0.000, &
-      0.996, 1.419, 2.839, 0.000, 0.000, 1.161, 1.890, 0.000 /
-
-DATA vprm_table_multi_4 & !cmr 20% decrease
-     / 185.6, 188.0, 193.6, 574.4, 1080.0, 540.8, 233.6, 0.000, &
-      -0.301, -0.205, -0.205, -0.138, -0.181, -0.122, -0.512, 0.000, &
-      0.151, 0.168, 0.105, 0.019, 0.004, 0.218, 0.342, 0.000, &
-      0.664, 0.946, 1.893, 0.000, 0.000, 0.774, 1.260, 0.000 /
-
-vprm_par=vprm_table_europe
+vprm_par=vprm_table_multi_eu
 vprm_par_2=vprm_table_multi_2
 vprm_par_3=vprm_table_multi_3
 vprm_par_4=vprm_table_multi_4
+vprm_par_5=vprm_table_multi_5
+vprm_par_6=vprm_table_multi_6
 
 rad_vprm=     vprm_par(1:8,1)
 lambda_vprm=  vprm_par(1:8,2)
@@ -2205,6 +2233,16 @@ rad_vprm_4=     vprm_par_4(1:8,1)
 lambda_vprm_4=  vprm_par_4(1:8,2)
 alpha_vprm_4=   vprm_par_4(1:8,3)
 resp_vprm_4=    vprm_par_4(1:8,4)
+
+rad_vprm_5=     vprm_par_5(1:8,1)
+lambda_vprm_5=  vprm_par_5(1:8,2)
+alpha_vprm_5=   vprm_par_5(1:8,3)
+resp_vprm_5=    vprm_par_5(1:8,4)
+
+rad_vprm_6=     vprm_par_6(1:8,1)
+lambda_vprm_6=  vprm_par_6(1:8,2)
+alpha_vprm_6=   vprm_par_6(1:8,3)
+resp_vprm_6=    vprm_par_6(1:8,4)
 
 END SUBROUTINE VPRM_par_initialize_multi
 !******************************************************************************

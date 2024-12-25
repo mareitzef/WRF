@@ -878,6 +878,8 @@
               grid%rad_vprm_2,grid%lambda_vprm_2, grid%alpha_vprm_2,grid%resp_vprm_2,      &
               grid%rad_vprm_3,grid%lambda_vprm_3, grid%alpha_vprm_3,grid%resp_vprm_3,      &
               grid%rad_vprm_4,grid%lambda_vprm_4, grid%alpha_vprm_4,grid%resp_vprm_4,      &
+              grid%rad_vprm_5,grid%lambda_vprm_5, grid%alpha_vprm_5,grid%resp_vprm_5,      &
+              grid%rad_vprm_6,grid%lambda_vprm_6, grid%alpha_vprm_6,grid%resp_vprm_6,      &
               grid%xtime,                                                                  & !cmr end 
               grid%TSLB, wet_in,grid%RAINC,grid%RAINNC,                                    &
               grid%potevp,grid%SFCEVP,grid%LU_INDEX,                                       &

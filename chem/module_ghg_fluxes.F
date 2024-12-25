@@ -91,6 +91,8 @@ DO j=jts,jte
          chem(i,1,j,p_co2_bio_2)= chem(i,1,j,p_co2_bio_2) + conv_rho* (eghg_bio(i,1,j,p_ebio_gee_2) + eghg_bio(i,1,j,p_ebio_res_2)) 
          chem(i,1,j,p_co2_bio_3)= chem(i,1,j,p_co2_bio_3) + conv_rho* (eghg_bio(i,1,j,p_ebio_gee_3) + eghg_bio(i,1,j,p_ebio_res_3)) 
          chem(i,1,j,p_co2_bio_4)= chem(i,1,j,p_co2_bio_4) + conv_rho* (eghg_bio(i,1,j,p_ebio_gee_4) + eghg_bio(i,1,j,p_ebio_res_4)) 
+         chem(i,1,j,p_co2_bio_5)= chem(i,1,j,p_co2_bio_5) + conv_rho* (eghg_bio(i,1,j,p_ebio_gee_5) + eghg_bio(i,1,j,p_ebio_res_5))
+         chem(i,1,j,p_co2_bio_6)= chem(i,1,j,p_co2_bio_6) + conv_rho* (eghg_bio(i,1,j,p_ebio_gee_6) + eghg_bio(i,1,j,p_ebio_res_6))
          chem(i,1,j,p_co2_oce)= chem(i,1,j,p_co2_oce) + conv_rho* ebio_co2oce(i,j)
          !cmr end
       end if
@@ -179,7 +181,19 @@ CASE ('VPRM_table_EUROPE')
 CASE ('VPRM_table_TROPICS')
   DATA Topt   /20.,20.,20.,20.,20.,22.,18.,0./
 CASE ('VPRM_table_MULTI') 
-  DATA Topt   /18.111,26.623,25.282,20.000,20.000,22.159,23.282,0.000/ !cmr: optimized values
+   if (p_ebio_gee_t == p_ebio_gee) then
+      DATA Topt   /14.25,23.58,18.41,20.0,20.0,22.00,15.88,0.000/ !cmr: optimized values in domain from FLUXNET2015 dataset (plus 4 sites around the domain)
+   else if (p_ebio_gee_t == p_ebio_gee_2) then
+      DATA Topt   /9.21,24.36,18.41,20.0,20.0,22.00,14.76,0.000/ !cmr: optimized values for single sites: CH-Dav-ENF, table_europe-DBF, CH-Lae-MF, table_europe-SAV, table_europe-SHB, table_europe-CRO, IT-Tor-GRA, OTHERS
+   else if (p_ebio_gee_t == p_ebio_gee_3) then
+      DATA Topt   /14.25,23.58,18.41,20.0,20.0,22.00,15.88,0.000/ !cmr: optimized values for single sites: DE-Lkb-ENF,  IT-MBo-GRA,
+   else if (p_ebio_gee_t == p_ebio_gee_4) then
+      DATA Topt   /14.25,23.58,18.41,20.0,20.0,22.00,15.88,0.000/ !cmr: optimized values for single sites: IT-Lav-ENF, AT-Neu-GRA
+   else if (p_ebio_gee_t == p_ebio_gee_5) then
+      DATA Topt   /14.25,23.58,18.41,20.0,20.0,22.00,15.88,0.000/ !cmr: optimized values for single sites: IT-Ren-ENF
+   else if (p_ebio_gee_t == p_ebio_gee_6) then
+      DATA Topt   /20.,20.,20.,20.,20.,22.,18.,0./ !cmr: using VPRM_table_EUROPE as a reference
+   end if 
 CASE DEFAULT
   CALL wrf_message("check vprm_opt in namelist.input")
   CALL wrf_error_fatal ( "NO PARAMETER TABLE IS INCLUDED FOR THIS VPRM TABLE OPTION!")
