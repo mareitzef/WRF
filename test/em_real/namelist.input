@@ -11,17 +11,28 @@ end_year                            = 2012, 2012,
 end_month                           = 07, 07,
 end_day                             = 31, 31,
 end_hour                            = 00, 00,
+start_year                          = 2012, 2012, 
+start_month                         = 07, 07,
+start_day                           = 01, 01,
+start_hour                          = 00, 00, 
+end_year                            = 2012, 2012,
+end_month                           = 07, 07,
+end_day                             = 31, 31,
+end_hour                            = 00, 00,
 interval_seconds                    = 21600
 input_from_file                     = .true., .true., .true.,
 history_interval                    = 60, 60, 60,
 frames_per_outfile                  = 1,  1, 1,
 restart                             = .false.,
 restart_interval                    = 1440,
+restart_interval                    = 1440,
 io_form_history                     = 2
 io_form_restart                     = 2
 io_form_input                       = 2
 io_form_boundary                    = 2
 debug_level                         = 0,
+iofields_filename	                = "iofields_VPRM.txt","iofields_VPRM.txt","iofields_VPRM.txt",
+ignore_iofields_warning             = .false.,
 iofields_filename	                = "iofields_VPRM.txt","iofields_VPRM.txt","iofields_VPRM.txt",
 ignore_iofields_warning             = .false.,
 auxinput15_inname                   = "vprm_input_d<domain>_<date>.nc" ! there is .nc extension when copying after shapeshifter
@@ -135,6 +146,7 @@ non_hydrostatic                     = .true., .true., .true.,
 moist_adv_opt                       = 1, 1, 1,
 scalar_adv_opt                      = 1, 1, 1,
 gwd_opt                             = 1, 1, 1,
+! epssm = 0.4 ! try again with ndown...
 /
 
 &bdy_control

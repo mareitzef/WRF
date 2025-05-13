@@ -110,7 +110,6 @@ DO j=jts,jte
          ! cmr end 
          
          chem(i,1,j,p_co2_oce)= chem(i,1,j,p_co2_oce) + conv_rho* ebio_co2oce(i,j)
-         !cmr end
       end if
 
       ENDDO
@@ -200,13 +199,18 @@ CASE ('VPRM_table_TROPICS')
 CASE ('VPRM_table_MULTI') 
    if (p_ebio_gee_t == p_ebio_gee) then
       DATA Topt   /14.250, 23.580, 17.440, 20.000, 20.000, 22.000, 15.880, 0.000/ !cmr: optimized values in domain from FLUXNET2015 dataset (plus 4 sites around the domain)
+      DATA Topt   /14.250, 23.580, 17.440, 20.000, 20.000, 22.000, 15.880, 0.000/ !cmr: optimized values in domain from FLUXNET2015 dataset (plus 4 sites around the domain)
    else if (p_ebio_gee_t == p_ebio_gee_2) then
+      DATA Topt   /9.7, 23.580, 17.440, 20.000, 20.000, 22.000, 18.81, 0.000/ !cmr: optimized values for single sites: CH-Dav-ENF, table_europe-DBF, CH-Lae-MF, table_europe-SAV, table_europe-SHB, table_europe-CRO, IT-Tor-GRA, OTHERS
       DATA Topt   /9.7, 23.580, 17.440, 20.000, 20.000, 22.000, 18.81, 0.000/ !cmr: optimized values for single sites: CH-Dav-ENF, table_europe-DBF, CH-Lae-MF, table_europe-SAV, table_europe-SHB, table_europe-CRO, IT-Tor-GRA, OTHERS
    else if (p_ebio_gee_t == p_ebio_gee_3) then
       DATA Topt   /18.81, 23.580, 17.440, 20.000, 20.000, 22.000, 16.28, 0.000/ !cmr: optimized values for single sites: DE-Lkb-ENF,  IT-MBo-GRA,
+      DATA Topt   /18.81, 23.580, 17.440, 20.000, 20.000, 22.000, 16.28, 0.000/ !cmr: optimized values for single sites: DE-Lkb-ENF,  IT-MBo-GRA,
    else if (p_ebio_gee_t == p_ebio_gee_4) then
       DATA Topt   /14.52, 23.580, 17.440, 20.000, 20.000, 22.000, 13.01, 0.000/ !cmr: optimized values for single sites: IT-Lav-ENF, AT-Neu-GRA
+      DATA Topt   /14.52, 23.580, 17.440, 20.000, 20.000, 22.000, 13.01, 0.000/ !cmr: optimized values for single sites: IT-Lav-ENF, AT-Neu-GRA
    else if (p_ebio_gee_t == p_ebio_gee_5) then
+      DATA Topt   /11.9, 23.580, 17.440, 20.000, 20.000, 22.000, 15.880, 0.000/ !cmr: optimized values for single sites: IT-Ren-ENF
       DATA Topt   /11.9, 23.580, 17.440, 20.000, 20.000, 22.000, 15.880, 0.000/ !cmr: optimized values for single sites: IT-Ren-ENF
    else if (p_ebio_gee_t == p_ebio_gee_6) then
       DATA Topt   /20.,20.,20.,20.,20.,22.,18.,0./ !cmr: using VPRM_table_EUROPE as a reference
