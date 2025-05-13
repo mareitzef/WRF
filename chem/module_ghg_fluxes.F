@@ -86,15 +86,28 @@ DO j=jts,jte
          !cmr begin
          ! chem(i,1,j,p_co2_bio)= chem(i,1,j,p_co2_bio) + conv_rho* (eghg_bio(i,1,j,p_ebio_gee) + eghg_bio(i,1,j,p_ebio_res))   ! both uptake and release
          ! chem(i,1,j,p_co2_oce)= chem(i,1,j,p_co2_oce) + conv_rho* ebio_co2oce(i,j)
-
-         chem(i,1,j,p_co2_bio)= chem(i,1,j,p_co2_bio)     + conv_rho* (eghg_bio(i,1,j,p_ebio_gee)   + eghg_bio(i,1,j,p_ebio_res)) 
-         chem(i,1,j,p_co2_bio_2)= chem(i,1,j,p_co2_bio_2) + conv_rho* (eghg_bio(i,1,j,p_ebio_gee_2) + eghg_bio(i,1,j,p_ebio_res_2)) 
-         chem(i,1,j,p_co2_bio_3)= chem(i,1,j,p_co2_bio_3) + conv_rho* (eghg_bio(i,1,j,p_ebio_gee_3) + eghg_bio(i,1,j,p_ebio_res_3)) 
-         chem(i,1,j,p_co2_bio_4)= chem(i,1,j,p_co2_bio_4) + conv_rho* (eghg_bio(i,1,j,p_ebio_gee_4) + eghg_bio(i,1,j,p_ebio_res_4)) 
-         chem(i,1,j,p_co2_bio_5)= chem(i,1,j,p_co2_bio_5) + conv_rho* (eghg_bio(i,1,j,p_ebio_gee_5) + eghg_bio(i,1,j,p_ebio_res_5))
-         chem(i,1,j,p_co2_bio_6)= chem(i,1,j,p_co2_bio_6) + conv_rho* (eghg_bio(i,1,j,p_ebio_gee_6) + eghg_bio(i,1,j,p_ebio_res_6))
+         
+         if (ISNAN(eghg_bio(i,1,j,p_ebio_gee))) then
+            write(message, '("CMR ERROR: eghg_bio_gee it set to zero as it is NaN at i=", I6, ", j=", I6)') i, j
+            CALL wrf_message(message)
+            write(message, '(" eghg_bio_gee=", E10.2, ", eghg_bio_res=", E10.2)') eghg_bio(i,1,j,p_ebio_gee), eghg_bio(i,1,j,p_ebio_res)
+            CALL wrf_message(message)
+            chem(i,1,j,p_co2_bio)= chem(i,1,j,p_co2_bio) + conv_rho* eghg_bio(i,1,j,p_ebio_res)
+            chem(i,1,j,p_co2_bio_2)= chem(i,1,j,p_co2_bio_2) + conv_rho* eghg_bio(i,1,j,p_ebio_res_2) 
+            chem(i,1,j,p_co2_bio_3)= chem(i,1,j,p_co2_bio_3) + conv_rho*  eghg_bio(i,1,j,p_ebio_res_3) 
+            chem(i,1,j,p_co2_bio_4)= chem(i,1,j,p_co2_bio_4) + conv_rho*  eghg_bio(i,1,j,p_ebio_res_4) 
+            chem(i,1,j,p_co2_bio_5)= chem(i,1,j,p_co2_bio_5) + conv_rho* eghg_bio(i,1,j,p_ebio_res_5)
+            chem(i,1,j,p_co2_bio_6)= chem(i,1,j,p_co2_bio_6) + conv_rho* eghg_bio(i,1,j,p_ebio_res_6)
+         else if (eghg_bio(i,1,j,p_ebio_gee)<=0.0) then
+            chem(i,1,j,p_co2_bio)=   chem(i,1,j,p_co2_bio)   + conv_rho* (eghg_bio(i,1,j,p_ebio_gee)   + eghg_bio(i,1,j,p_ebio_res))
+            chem(i,1,j,p_co2_bio_2)= chem(i,1,j,p_co2_bio_2) + conv_rho* (eghg_bio(i,1,j,p_ebio_gee_2) + eghg_bio(i,1,j,p_ebio_res_2)) 
+            chem(i,1,j,p_co2_bio_3)= chem(i,1,j,p_co2_bio_3) + conv_rho* (eghg_bio(i,1,j,p_ebio_gee_3) + eghg_bio(i,1,j,p_ebio_res_3)) 
+            chem(i,1,j,p_co2_bio_4)= chem(i,1,j,p_co2_bio_4) + conv_rho* (eghg_bio(i,1,j,p_ebio_gee_4) + eghg_bio(i,1,j,p_ebio_res_4)) 
+            chem(i,1,j,p_co2_bio_5)= chem(i,1,j,p_co2_bio_5) + conv_rho* (eghg_bio(i,1,j,p_ebio_gee_5) + eghg_bio(i,1,j,p_ebio_res_5))
+            chem(i,1,j,p_co2_bio_6)= chem(i,1,j,p_co2_bio_6) + conv_rho* (eghg_bio(i,1,j,p_ebio_gee_6) + eghg_bio(i,1,j,p_ebio_res_6)) 
+         end if   
+         ! cmr end 
          chem(i,1,j,p_co2_oce)= chem(i,1,j,p_co2_oce) + conv_rho* ebio_co2oce(i,j)
-         !cmr end
       end if
 
       ENDDO
@@ -182,15 +195,15 @@ CASE ('VPRM_table_TROPICS')
   DATA Topt   /20.,20.,20.,20.,20.,22.,18.,0./
 CASE ('VPRM_table_MULTI') 
    if (p_ebio_gee_t == p_ebio_gee) then
-      DATA Topt   /14.25,23.58,18.41,20.0,20.0,22.00,15.88,0.000/ !cmr: optimized values in domain from FLUXNET2015 dataset (plus 4 sites around the domain)
+      DATA Topt   /14.250, 23.580, 17.440, 20.000, 20.000, 22.000, 15.880, 0.000/ !cmr: optimized values in domain from FLUXNET2015 dataset (plus 4 sites around the domain)
    else if (p_ebio_gee_t == p_ebio_gee_2) then
-      DATA Topt   /9.21,24.36,18.41,20.0,20.0,22.00,14.76,0.000/ !cmr: optimized values for single sites: CH-Dav-ENF, table_europe-DBF, CH-Lae-MF, table_europe-SAV, table_europe-SHB, table_europe-CRO, IT-Tor-GRA, OTHERS
+      DATA Topt   /9.7, 23.580, 17.440, 20.000, 20.000, 22.000, 18.81, 0.000/ !cmr: optimized values for single sites: CH-Dav-ENF, table_europe-DBF, CH-Lae-MF, table_europe-SAV, table_europe-SHB, table_europe-CRO, IT-Tor-GRA, OTHERS
    else if (p_ebio_gee_t == p_ebio_gee_3) then
-      DATA Topt   /14.25,23.58,18.41,20.0,20.0,22.00,15.88,0.000/ !cmr: optimized values for single sites: DE-Lkb-ENF,  IT-MBo-GRA,
+      DATA Topt   /18.81, 23.580, 17.440, 20.000, 20.000, 22.000, 16.28, 0.000/ !cmr: optimized values for single sites: DE-Lkb-ENF,  IT-MBo-GRA,
    else if (p_ebio_gee_t == p_ebio_gee_4) then
-      DATA Topt   /14.25,23.58,18.41,20.0,20.0,22.00,15.88,0.000/ !cmr: optimized values for single sites: IT-Lav-ENF, AT-Neu-GRA
+      DATA Topt   /14.52, 23.580, 17.440, 20.000, 20.000, 22.000, 13.01, 0.000/ !cmr: optimized values for single sites: IT-Lav-ENF, AT-Neu-GRA
    else if (p_ebio_gee_t == p_ebio_gee_5) then
-      DATA Topt   /14.25,23.58,18.41,20.0,20.0,22.00,15.88,0.000/ !cmr: optimized values for single sites: IT-Ren-ENF
+      DATA Topt   /11.9, 23.580, 17.440, 20.000, 20.000, 22.000, 15.880, 0.000/ !cmr: optimized values for single sites: IT-Ren-ENF
    else if (p_ebio_gee_t == p_ebio_gee_6) then
       DATA Topt   /20.,20.,20.,20.,20.,22.,18.,0./ !cmr: using VPRM_table_EUROPE as a reference
    end if 
