@@ -280,6 +280,150 @@ DO i=its,min(ite,ide-1)
 
 END SUBROUTINE VPRM
 !****************************************************************************************
+!cmr begin
+SUBROUTINE dflux_dT                 (  ids,ide, jds,jde,                 &
+                                   ims,ime, jms,jme,                 &
+                                   its,ite, jts,jte,                 &
+                                   vprm_in,rad0, lambda,            &
+                                   alpha, RESP0,                    &                                 
+                                 T2,RAD, eghg_bio,p_ebio_gee_t,p_ebio_res_t, config_flags        ) !cmr
+
+USE module_configure,only:  grid_config_rec_type !cmr
+TYPE (grid_config_rec_type) , INTENT (IN) :: config_flags !cmr
+
+INTEGER,  INTENT(IN   )   ::  ids,ide, jds,jde, &
+                              ims,ime, jms,jme, &
+                              its,ite, jts,jte
+
+INTEGER,  INTENT(IN   )   ::  p_ebio_gee_t,p_ebio_res_t !cmr
+INTEGER :: i,j,m
+
+REAL, PARAMETER :: const= 3.6e+3 ! For unit conversion from mmol/m^2/s to mol/km2/hr
+
+REAL, DIMENSION (ims:ime, jms:jme), INTENT(IN)    ::  T2,  RAD
+
+REAL, DIMENSION( ims:ime, 8, jms:jme, num_vprm_in), INTENT(IN)   ::  vprm_in
+REAL, DIMENSION( ims:ime, 1,jms:jme, num_eghg_bio ), INTENT(INOUT ) ::  eghg_bio
+
+REAL, DIMENSION(num_vprm_in) :: rad0, lambda, alpha, RESP0
+REAL  ::  a1,a2,a3,f,g,df,dg,Tair,Tscale,EVI, vegfra, RADval, dTscale_dT,Wscale,Pscale,GEE_analytic,RES_analytic,evithresh,RADscale
+
+! VPRM vegetation classes:
+!1-Evergreen c
+!2-Deciduous
+!3-Mixed forest
+!4-Shrubland
+!5-Savanna
+!6-Cropland
+!7-Grassland
+!8-Others
+
+REAL, DIMENSION(8) ::  Tmax,Tmin,Topt
+! These are universal VPRM parameters
+DATA Tmin   /0.,0.,0.,2.,2.,5.,2.,0./
+!cmr: DATA Topt   /20.,20.,20.,20.,20.,22.,18.,0./
+DATA Tmax   /8*40./
+
+! cmr begin: use optimized Temperature for Alps
+sel_pars: SELECT CASE(config_flags%vprm_opt)
+CASE ('VPRM_table_US')
+  DATA Topt   /20.,20.,20.,20.,20.,22.,18.,0./
+CASE ('VPRM_table_EUROPE')
+  DATA Topt   /20.,20.,20.,20.,20.,22.,18.,0./
+CASE ('VPRM_table_TROPICS')
+  DATA Topt   /20.,20.,20.,20.,20.,22.,18.,0./
+CASE ('VPRM_table_MULTI') 
+   if (p_ebio_gee_t == p_ebio_gee_7) then
+      DATA Topt   /14.250, 23.580, 17.440, 20.000, 20.000, 22.000, 15.880, 0.000/ !cmr: optimized values in domain from FLUXNET2015 dataset (plus 4 sites around the domain)
+   else if (p_ebio_gee_t == p_ebio_gee_8) then
+      DATA Topt   /20.,20.,20.,20.,20.,22.,18.,0./ !cmr: using VPRM_table_EUROPE as a reference
+   end if 
+CASE DEFAULT
+  CALL wrf_message("you need VPRM_table_MULTI to use derivatives of VRPM from subroutine dflux_dT")
+  ! CALL wrf_error_fatal ( "NO PARAMETER TABLE IS INCLUDED FOR THIS VPRM TABLE OPTION!")
+END SELECT sel_pars
+! cmr end
+
+DO j = jts, MIN(jte,jde-1)
+DO i = its, MIN(ite,ide-1)
+
+  GEE_analytic = 0.0
+  RES_analytic = 0.0
+
+  Tair = T2(i,j) - 273.15
+
+  veg_frac_loop: DO m = 1, 7
+    IF (vprm_in(i,m,j,p_vegfra_vprm) < 1.e-8) CYCLE
+
+    ! Wscale
+    IF (m==4 .OR. m==7) THEN
+      IF (vprm_in(i,m,j,p_lswi_max) < 1e-7) THEN
+        Wscale = 0.
+      ELSE
+        Wscale = (vprm_in(i,m,j,p_lswi) - vprm_in(i,m,j,p_lswi_min)) / &
+                 (vprm_in(i,m,j,p_lswi_max) - vprm_in(i,m,j,p_lswi_min))
+      END IF
+    ELSE
+      Wscale = (1. + vprm_in(i,m,j,p_lswi)) / (1. + vprm_in(i,m,j,p_lswi_max))
+    END IF
+
+    ! Pscale
+    IF (m==1) THEN
+      Pscale = 1.
+    ELSE IF (m==5 .OR. m==7) THEN
+      Pscale = (1. + vprm_in(i,m,j,p_lswi)) / 2.
+    ELSE
+      evithresh = vprm_in(i,m,j,p_evi_min) + 0.55 * &
+                  (vprm_in(i,m,j,p_evi_max) - vprm_in(i,m,j,p_evi_min))
+      IF (vprm_in(i,m,j,p_evi) >= evithresh) THEN
+        Pscale = 1.
+      ELSE
+        Pscale = (1. + vprm_in(i,m,j,p_lswi)) / 2.
+      END IF
+    END IF
+
+    RADscale = 1. / (1. + RAD(i,j)/rad0(m))
+    EVI = vprm_in(i,m,j,p_evi)
+    vegfra = vprm_in(i,m,j,p_vegfra_vprm)
+    RADval = RAD(i,j)
+
+    ! Tscale and dTscale_dT
+    a1 = Tair - Tmin(m)
+    a2 = Tair - Tmax(m)
+    a3 = Tair - Topt(m)
+
+    Tscale = 0.
+    dTscale_dT = 0.
+
+   IF (a1 >= 0. .AND. a2 <= 0.) THEN
+      f = a1 * a2
+      g = f - a3**2
+      df = a1 + a2
+      dg = df - 2. * a3
+      IF (ABS(g) > 1e-8) THEN
+        Tscale = f / g
+        IF (Tscale < 0.) THEN
+          dTscale_dT = 0.
+        ELSE
+          dTscale_dT = (df*g - f*dg) / (g*g)
+        END IF
+      END IF
+    END IF
+
+    GEE_analytic = GEE_analytic + lambda(m)*dTscale_dT*Pscale*Wscale*RADscale*EVI*RADval*vegfra
+    RES_analytic = RES_analytic + alpha(m) * vegfra
+
+  END DO veg_frac_loop
+
+  eghg_bio(i,1,j,p_ebio_gee_t) = const * GEE_analytic
+  eghg_bio(i,1,j,p_ebio_res_t) = const * RES_analytic
+
+END DO
+END DO
+
+END SUBROUTINE dflux_dT
+!cmr end
+!****************************************************************************************
 
 !VB: here comes the subroutine for the kaplan wetland inventory (Kaplan, 2002+2006)
 !which calculates CH4 wetland emissions from wrf soil temperature and soil moisture fields

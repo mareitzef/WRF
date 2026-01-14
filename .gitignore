@@ -62,3 +62,8 @@ et --hard 5fc4e082
 external/io_int/diffwrf
 external/io_int/test_io_idx
 external/io_netcdf/diffwrf
+job_compile.slurm
+Registry_tmp.2222280
+external/io_int/diffwrf
+external/io_int/test_io_idx
+external/io_netcdf/diffwrf

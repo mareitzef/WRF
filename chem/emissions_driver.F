@@ -1142,7 +1142,20 @@ CONTAINS
                          alpha_vprm_6,resp_vprm_6,               &
                          T2,swdown,                          &                         
                          eghg_bio,p_ebio_gee_6,p_ebio_res_6,config_flags) !cmr eghg_bio    
-
+   CALL dflux_dT(        ids,ide, jds,jde,                   &
+                         ims,ime, jms,jme,                   &
+                         its,ite, jts,jte,                   &
+                         vprm_in,rad_vprm,lambda_vprm,       &
+                         alpha_vprm,resp_vprm,               &
+                         T2,swdown,                          &                         
+                         eghg_bio,p_ebio_gee_7,p_ebio_res_7,config_flags) !cmr eghg_bio 
+   CALL dflux_dT(        ids,ide, jds,jde,                   &
+                         ims,ime, jms,jme,                   &
+                         its,ite, jts,jte,                   &
+                         vprm_in,rad_vprm_6,lambda_vprm_6,   &
+                         alpha_vprm_6,resp_vprm_6,           &
+                         T2,swdown,                          &                         
+                         eghg_bio,p_ebio_gee_8,p_ebio_res_8,config_flags) !cmr eghg_bio 
 
   ! Update the biospheric CH4 fluxes if the GHG option is called
    if (p_ch4_bio .GT. 1) then

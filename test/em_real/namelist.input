@@ -3,20 +3,20 @@ run_days                            = 0,
 run_hours                           = 0,
 run_minutes                         = 0,
 run_seconds                         = 0,
-start_year                          = 2012, 2012, 
-start_month                         = 07, 07,
-start_day                           = 01, 01,
-start_hour                          = 00, 00, 
-end_year                            = 2012, 2012,
-end_month                           = 07, 07,
-end_day                             = 31, 31,
-end_hour                            = 00, 00,
+ start_year                          = 2012, 2012,
+ start_month                         = 08, 08,
+ start_day                           = 29, 29,
+ start_hour                          = 18, 18,
+ end_year                            = 2012, 2012,
+ end_month                           = 08, 08,
+ end_day                             = 31, 31,
+ end_hour                            = 00, 00,
 interval_seconds                    = 21600
 input_from_file                     = .true., .true., .true.,
 history_interval                    = 60, 60, 60,
 frames_per_outfile                  = 1,  1, 1,
 restart                             = .false.,
-restart_interval                    = 1440,
+restart_interval                    = 1800,
 io_form_history                     = 2
 io_form_restart                     = 2
 io_form_input                       = 2
@@ -34,7 +34,7 @@ force_use_old_data                  = .true.
 time_step                           = 12,
 time_step_fract_num                 = 0,
 time_step_fract_den                 = 1,
-max_dom                             = 1,
+max_dom                             = 2,
 e_we                                = 339, 328, 211
 e_sn                                = 285, 328, 171
 e_vert                              = 81, 81, 81,        	! vertical levels for era5
@@ -67,10 +67,8 @@ i_parent_start                      = 1, 119, 138
 j_parent_start                      = 1, 108, 219
 parent_grid_ratio                   = 1, 3, 5, 
 parent_time_step_ratio              = 1, 3, 5,
-feedback                            = 1,
+feedback                            = 0,
 smooth_option                       = 0,
-nproc_x =    33
-nproc_y =    28
 /
 
 &physics
@@ -93,8 +91,11 @@ cu_rad_feedback          = .false.,.false., .false.,
 isfflx                   = 1,
 ifsnow                   = 0,
 icloud                   = 1,
-! sf_surface_mosaic        = 1,
 num_land_cat             = 44,
+sf_surface_mosaic        = 1,
+mosaic_cat              = 5,
+slope_rad                =1,1,
+topo_shading             =1,1,
 /
 
 &chem 
@@ -106,7 +107,7 @@ emiss_opt  		        = 16, 16, 16,
 bio_emiss_opt  	        = 16, 16, 16,
 emiss_inpt_opt  	    = 16, 16, 16,
 ! set chem in opt to 0 for real.exe
-chem_in_opt       = 1,1,1,
+chem_in_opt       = 1,1,
 chem_conv_tr 		    = 0, 0, 0,
 vertmix_onoff       	= 1, 1, 0,
 aer_ra_feedback  	    = 0, 0, 0,
@@ -119,14 +120,14 @@ have_bcs_chem = .true.,
 /
 
 &dynamics
-hybrid_opt                          = 2, 
-w_damping                           = 0, 
+! hybrid_opt                          = 2, 
+! w_damping                           = 0, 
 diff_opt                            = 2, 2, 2,  
 km_opt                              = 4, 4, 4, 
 diff_6th_opt                        = 0, 0, 0,   
 diff_6th_factor                     = 0.12, 0.12, 0.12, 
 base_temp                           = 290., 
-damp_opt                            = 3, 
+damp_opt                            = 3,
 zdamp                               = 3000., 3000., 3000.,
 dampcoef                            = 0.2, 0.2, 0.2,
 khdif                               = 0, 0, 0,
@@ -135,7 +136,17 @@ non_hydrostatic                     = .true., .true., .true.,
 moist_adv_opt                       = 1, 1, 1,
 scalar_adv_opt                      = 1, 1, 1,
 gwd_opt                             = 1, 1, 1,
-! epssm = 0.4 ! try again with ndown...
+epssm			= 0.5,0.5,		! = semi-implicit acoustic time step off-centering to dampen
+ 					            ! vertically propagating sound waves (see ARW tech notes)
+                        		! default is 0.1; higher values up to 1 may be needed
+                        		! to dampen instabilities associated with steep slopes in 
+					            ! complex terrain and horizontal sound waves
+ smdiv			= 0.1,0.1,		! divergence damping, 0.1 is typical
+ emdiv			= 0.01,0.01,		! 0.01 is typical for real-data cases
+ sfs_opt              	= 0,0,		! = nonlinear backscatter and anisotropy (NBA) is off
+ use_input_w		= .false.,	! = do not use vertical velocity from input file
+ do_avgflx_em         	= 1,1,         	! = output time-averaged mass-coupled advective velocities (?)
+ mix_isotropic		= 0,0,		! = anisotropic vertical/horizontal diffusion using defaults
 /
 
 &bdy_control

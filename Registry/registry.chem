@@ -284,12 +284,16 @@ state   real    ebio_gee_3      ivjf     eghg_bio       1        Z       rh     
 state   real    ebio_gee_4      ivjf     eghg_bio       1        Z       rh       "EBIO_GEE_4"    "biospheric VPRM CO2 uptake"                 "mol km^-2 hr^-1"
 state   real    ebio_gee_5      ivjf     eghg_bio       1        Z       rh       "EBIO_GEE_5"    "biospheric VPRM CO2 uptake"                 "mol km^-2 hr^-1"
 state   real    ebio_gee_6      ivjf     eghg_bio       1        Z       rh       "EBIO_GEE_REF"  "biospheric VPRM CO2 uptake"                 "mol km^-2 hr^-1"
+state   real    ebio_gee_7      ivjf     eghg_bio       1        Z       rh       "EBIO_GEE_DPDT" "derivative of biospheric VPRM CO2 uptake"   "mol km^-2 hr^-1 K^-1"
+state   real    ebio_gee_8      ivjf     eghg_bio       1        Z       rh       "EBIO_GEE_DPDT_REF" "derivative of biospheric VPRM CO2 uptake"   "mol km^-2 hr^-1 K^-1"
 state   real    ebio_res        ivjf     eghg_bio       1        Z       rh       "EBIO_RES"      "biospheric VPRM CO2 release"                "mol km^-2 hr^-1"
 state   real    ebio_res_2      ivjf     eghg_bio       1        Z       rh       "EBIO_RES_2"    "biospheric VPRM CO2 release"                "mol km^-2 hr^-1"
 state   real    ebio_res_3      ivjf     eghg_bio       1        Z       rh       "EBIO_RES_3"    "biospheric VPRM CO2 release"                "mol km^-2 hr^-1"
 state   real    ebio_res_4      ivjf     eghg_bio       1        Z       rh       "EBIO_RES_4"    "biospheric VPRM CO2 release"                "mol km^-2 hr^-1"
 state   real    ebio_res_5      ivjf     eghg_bio       1        Z       rh       "EBIO_RES_5"    "biospheric VPRM CO2 release"                "mol km^-2 hr^-1"
 state   real    ebio_res_6      ivjf     eghg_bio       1        Z       rh       "EBIO_RES_REF"  "biospheric VPRM CO2 release"                "mol km^-2 hr^-1"
+state   real    ebio_res_7      ivjf     eghg_bio       1        Z       rh       "EBIO_RES_DPDT" "derivative of biospheric VPRM CO2 release"  "mol km^-2 hr^-1 K^-1"
+state   real    ebio_res_8      ivjf     eghg_bio       1        Z       rh       "EBIO_RES_DPDT_REF"  "derivative of biospheric VPRM CO2 release"   "mol km^-2 hr^-1 K^-1"
 state   real    ebio_ch4wet     ivjf     eghg_bio       1        Z       -       "EBIO_CH4WET"   "Biogenic CH4 wetland emissions"             "mol km^-2 hr^-1"
 state   real    ebio_ch4soil    ivjf     eghg_bio       1        Z       -       "EBIO_CH4SOIL"  "CH4 soil uptake fluxes"                     "mol km^-2 hr^-1"
 state   real    ebio_ch4term    ivjf     eghg_bio       1        Z       -       "EBIO_CH4TERM"  "CH4 termite emissions"                      "mol km^-2 hr^-1"
@@ -4122,7 +4126,7 @@ package   megan2        bio_emiss_opt==3             -             state:mebio_i
 package   megan2_clm    bio_emiss_opt==4   
 
 # Biospheric CO2 and CH4 emissions
-package   ebioco2       bio_emiss_opt==16            -             state:rad_vprm,lambda_vprm,alpha_vprm,resp_vprm,rad_vprm_2,lambda_vprm_2,alpha_vprm_2,resp_vprm_2,rad_vprm_3,lambda_vprm_3,alpha_vprm_3,resp_vprm_3,rad_vprm_4,lambda_vprm_4,alpha_vprm_4,resp_vprm_4,rad_vprm_5,lambda_vprm_5,alpha_vprm_5,resp_vprm_5,rad_vprm_6,lambda_vprm_6,alpha_vprm_6,resp_vprm_6;vprm_in:vegfra_vprm,evi,evi_min,evi_max,lswi,lswi_max,lswi_min;eghg_bio:ebio_gee,ebio_res,ebio_gee_2,ebio_res_2,ebio_gee_3,ebio_res_3,ebio_gee_4,ebio_res_4,ebio_gee_5,ebio_res_5,ebio_gee_6,ebio_res_6,ebio_co2oce
+package   ebioco2       bio_emiss_opt==16            -             state:rad_vprm,lambda_vprm,alpha_vprm,resp_vprm,rad_vprm_2,lambda_vprm_2,alpha_vprm_2,resp_vprm_2,rad_vprm_3,lambda_vprm_3,alpha_vprm_3,resp_vprm_3,rad_vprm_4,lambda_vprm_4,alpha_vprm_4,resp_vprm_4,rad_vprm_5,lambda_vprm_5,alpha_vprm_5,resp_vprm_5,rad_vprm_6,lambda_vprm_6,alpha_vprm_6,resp_vprm_6;vprm_in:vegfra_vprm,evi,evi_min,evi_max,lswi,lswi_max,lswi_min;eghg_bio:ebio_gee,ebio_res,ebio_gee_2,ebio_res_2,ebio_gee_3,ebio_res_3,ebio_gee_4,ebio_res_4,ebio_gee_5,ebio_res_5,ebio_gee_6,ebio_res_6,ebio_co2oce,ebio_gee_7,ebio_res_7,ebio_gee_8,ebio_res_8
 package   ebioghg       bio_emiss_opt==17            -             state:rad_vprm,lambda_vprm,alpha_vprm,resp_vprm;vprm_in:vegfra_vprm,evi,evi_min,evi_max,lswi,lswi_max,lswi_min;wet_in:cpool,wetmap,t_ann;eghg_bio:ebio_gee,ebio_res,ebio_co2oce,ebio_ch4wet,ebio_ch4soil,ebio_ch4term
 
 # the following arrays only needed for burn options
