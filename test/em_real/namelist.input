@@ -24,6 +24,8 @@ io_form_boundary                    = 2
 debug_level                         = 0,
 iofields_filename	                = "iofields_VPRM.txt","iofields_VPRM.txt","iofields_VPRM.txt",
 ignore_iofields_warning             = .false.,
+iofields_filename	                = "iofields_VPRM.txt","iofields_VPRM.txt","iofields_VPRM.txt",
+ignore_iofields_warning             = .false.,
 auxinput15_inname                   = "vprm_input_d<domain>_<date>.nc" ! there is .nc extension when copying after shapeshifter
 auxinput15_interval                 = 86400, 86400,86400,
 io_form_auxinput15                  = 2,
@@ -31,7 +33,7 @@ force_use_old_data                  = .true.
 /
 
 &domains
-time_step                           = 12,
+time_step                           = 20,
 time_step_fract_num                 = 0,
 time_step_fract_den                 = 1,
 max_dom                             = 2,
@@ -59,8 +61,8 @@ num_metgrid_levels		            = 33,
 dzstretch_s                         = 1.1
 ! p_top_requested                     = 5000,
 num_metgrid_soil_levels             = 4,
-dx                                  = 3000, 1000, 200,
-dy                                  = 3000, 1000, 200,
+dx                                  = 9000, 1000, 200,
+dy                                  = 9000, 1000, 200,
 grid_id                             = 1, 2, 3, 
 parent_id                           = 0, 1, 2, 
 i_parent_start                      = 1, 119, 138
@@ -74,9 +76,9 @@ smooth_option                       = 0,
 &physics
 mp_physics               = 6,6,6,
 mp_zero_out              = 2,      
-ra_lw_physics            = 4,4,
-ra_sw_physics            = 4,4,
-radt                     = 1,1, 
+ra_lw_physics            = 4,4,4,
+ra_sw_physics            = 4,4,4,
+radt                     = 9,3,3,
 sf_sfclay_physics        = 4,4,4,
 sf_surface_physics       = 2,2,2,
 sf_urban_physics         = 0,0,0,
