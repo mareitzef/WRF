@@ -77,6 +77,11 @@ CONTAINS
          rad_vprm_4,lambda_vprm_4,alpha_vprm_4,resp_vprm_4,               & !cmr end
          rad_vprm_5,lambda_vprm_5,alpha_vprm_5,resp_vprm_5,               &
          rad_vprm_6,lambda_vprm_6,alpha_vprm_6,resp_vprm_6,               &
+         rad_vprm_9,lambda_vprm_9,alpha_vprm_9,resp_vprm_9,               &
+         rad_vprm_10,lambda_vprm_10,alpha_vprm_10,resp_vprm_10,           &
+         rad_vprm_11,lambda_vprm_11,alpha_vprm_11,resp_vprm_11,           &
+         rad_vprm_12,lambda_vprm_12,alpha_vprm_12,resp_vprm_12,           &
+         rad_vprm_13,lambda_vprm_13,alpha_vprm_13,resp_vprm_13,           &
          xtime,tslb,wet_in,rainc,rainnc,potevp,sfcevp,lu_index,            &
          biomt_par,emit_par,ebio_co2oce,eghg_bio,                          &
          seas_flux,                                                        &
@@ -338,6 +343,11 @@ CONTAINS
       REAL, DIMENSION(8) :: rad_vprm_4,lambda_vprm_4,alpha_vprm_4,resp_vprm_4 !cmr
       REAL, DIMENSION(8) :: rad_vprm_5,lambda_vprm_5,alpha_vprm_5,resp_vprm_5 !cmr
       REAL, DIMENSION(8) :: rad_vprm_6,lambda_vprm_6,alpha_vprm_6,resp_vprm_6 !cmr
+      REAL, DIMENSION(8) :: rad_vprm_9,lambda_vprm_9,alpha_vprm_9,resp_vprm_9 !cmr Topt percentile p10
+      REAL, DIMENSION(8) :: rad_vprm_10,lambda_vprm_10,alpha_vprm_10,resp_vprm_10 !cmr p25
+      REAL, DIMENSION(8) :: rad_vprm_11,lambda_vprm_11,alpha_vprm_11,resp_vprm_11 !cmr p50
+      REAL, DIMENSION(8) :: rad_vprm_12,lambda_vprm_12,alpha_vprm_12,resp_vprm_12 !cmr p75
+      REAL, DIMENSION(8) :: rad_vprm_13,lambda_vprm_13,alpha_vprm_13,resp_vprm_13 !cmr p90
 ! CH4
       REAL, DIMENSION(14), INTENT(IN) :: biomt_par, emit_par
       REAL, DIMENSION(ims:ime,1,jms:jme,num_wet_in), INTENT(IN)  :: wet_in
@@ -1141,7 +1151,48 @@ CONTAINS
                          vprm_in,rad_vprm_6,lambda_vprm_6,       &
                          alpha_vprm_6,resp_vprm_6,               &
                          T2,swdown,                          &                         
-                         eghg_bio,p_ebio_gee_6,p_ebio_res_6,config_flags) !cmr eghg_bio    
+                         eghg_bio,p_ebio_gee_6,p_ebio_res_6,config_flags) !cmr eghg_bio
+! Update the biospheric CO2 fluxes for the Topt-percentile ensemble (p10..p90)
+   CALL VPRM(            ids,ide, jds,jde,                   &
+                         ims,ime, jms,jme,                   &
+                         its,ite, jts,jte,                   &
+
+                         vprm_in,rad_vprm_9,lambda_vprm_9,       &
+                         alpha_vprm_9,resp_vprm_9,               &
+                         T2,swdown,                          &
+                         eghg_bio,p_ebio_gee_9,p_ebio_res_9,config_flags) !cmr Topt percentile p10
+   CALL VPRM(            ids,ide, jds,jde,                   &
+                         ims,ime, jms,jme,                   &
+                         its,ite, jts,jte,                   &
+
+                         vprm_in,rad_vprm_10,lambda_vprm_10,       &
+                         alpha_vprm_10,resp_vprm_10,               &
+                         T2,swdown,                          &
+                         eghg_bio,p_ebio_gee_10,p_ebio_res_10,config_flags) !cmr Topt percentile p25
+   CALL VPRM(            ids,ide, jds,jde,                   &
+                         ims,ime, jms,jme,                   &
+                         its,ite, jts,jte,                   &
+
+                         vprm_in,rad_vprm_11,lambda_vprm_11,       &
+                         alpha_vprm_11,resp_vprm_11,               &
+                         T2,swdown,                          &
+                         eghg_bio,p_ebio_gee_11,p_ebio_res_11,config_flags) !cmr Topt percentile p50
+   CALL VPRM(            ids,ide, jds,jde,                   &
+                         ims,ime, jms,jme,                   &
+                         its,ite, jts,jte,                   &
+
+                         vprm_in,rad_vprm_12,lambda_vprm_12,       &
+                         alpha_vprm_12,resp_vprm_12,               &
+                         T2,swdown,                          &
+                         eghg_bio,p_ebio_gee_12,p_ebio_res_12,config_flags) !cmr Topt percentile p75
+   CALL VPRM(            ids,ide, jds,jde,                   &
+                         ims,ime, jms,jme,                   &
+                         its,ite, jts,jte,                   &
+
+                         vprm_in,rad_vprm_13,lambda_vprm_13,       &
+                         alpha_vprm_13,resp_vprm_13,               &
+                         T2,swdown,                          &
+                         eghg_bio,p_ebio_gee_13,p_ebio_res_13,config_flags) !cmr Topt percentile p90
    CALL dflux_dT(        ids,ide, jds,jde,                   &
                          ims,ime, jms,jme,                   &
                          its,ite, jts,jte,                   &

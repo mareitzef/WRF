@@ -880,7 +880,12 @@
               grid%rad_vprm_4,grid%lambda_vprm_4, grid%alpha_vprm_4,grid%resp_vprm_4,      &
               grid%rad_vprm_5,grid%lambda_vprm_5, grid%alpha_vprm_5,grid%resp_vprm_5,      &
               grid%rad_vprm_6,grid%lambda_vprm_6, grid%alpha_vprm_6,grid%resp_vprm_6,      &
-              grid%xtime,                                                                  & !cmr end 
+              grid%rad_vprm_9,grid%lambda_vprm_9, grid%alpha_vprm_9,grid%resp_vprm_9,      &
+              grid%rad_vprm_10,grid%lambda_vprm_10, grid%alpha_vprm_10,grid%resp_vprm_10,  &
+              grid%rad_vprm_11,grid%lambda_vprm_11, grid%alpha_vprm_11,grid%resp_vprm_11,  &
+              grid%rad_vprm_12,grid%lambda_vprm_12, grid%alpha_vprm_12,grid%resp_vprm_12,  &
+              grid%rad_vprm_13,grid%lambda_vprm_13, grid%alpha_vprm_13,grid%resp_vprm_13,  &
+              grid%xtime,                                                                  & !cmr end
               grid%TSLB, wet_in,grid%RAINC,grid%RAINNC,                                    &
               grid%potevp,grid%SFCEVP,grid%LU_INDEX,                                       &
               grid%biomt_par,grid%emit_par,grid%ebio_co2oce,                               &
