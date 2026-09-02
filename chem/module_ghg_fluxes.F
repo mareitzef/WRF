@@ -185,36 +185,46 @@ REAL  ::  a1,a2,a3,Tair,Tscale,Wscale,Pscale,GEE_frac,RESP_frac,evithresh,RADsca
 REAL, DIMENSION(8) ::  Tmax,Tmin,Topt
 ! These are universal VPRM parameters
 DATA Tmin   /0.,0.,0.,2.,2.,5.,2.,0./
-!cmr: DATA Topt   /20.,20.,20.,20.,20.,22.,18.,0./
 DATA Tmax   /8*40./
 
 ! cmr begin: use optimized Temperature for Alps
+! NOTE: Topt MUST be set with executable array assignments, never with DATA
+! statements. DATA is a compile-time initializer and ignores runtime control
+! flow -- when several DATA Topt statements existed inside this SELECT CASE the
+! compiler silently kept only the first one (VPRM_table_US), so every channel ran
+! with Topt=20/18 regardless of p_ebio_gee_t. Fixed by using Topt = (/.../) here.
+Topt = (/20.,20.,20.,20.,20.,22.,18.,0./)   ! default, overridden per branch below
 sel_pars: SELECT CASE(config_flags%vprm_opt)
 CASE ('VPRM_table_US')
-  DATA Topt   /20.,20.,20.,20.,20.,22.,18.,0./
+  Topt = (/20.,20.,20.,20.,20.,22.,18.,0./)
 CASE ('VPRM_table_EUROPE')
-  DATA Topt   /20.,20.,20.,20.,20.,22.,18.,0./
+  Topt = (/20.,20.,20.,20.,20.,22.,18.,0./)
 CASE ('VPRM_table_TROPICS')
-  DATA Topt   /20.,20.,20.,20.,20.,22.,18.,0./
-CASE ('VPRM_table_MULTI') 
+  Topt = (/20.,20.,20.,20.,20.,22.,18.,0./)
+CASE ('VPRM_table_MULTI')
    if (p_ebio_gee_t == p_ebio_gee) then
-      DATA Topt   /14.250, 23.580, 17.440, 20.000, 20.000, 22.000, 15.880, 0.000/ !cmr: optimized values in domain from FLUXNET2015 dataset (plus 4 sites around the domain)
-      DATA Topt   /14.250, 23.580, 17.440, 20.000, 20.000, 22.000, 15.880, 0.000/ !cmr: optimized values in domain from FLUXNET2015 dataset (plus 4 sites around the domain)
+      Topt = (/14.250, 23.580, 17.440, 20.000, 20.000, 22.000, 15.880, 0.000/) !cmr: optimized values in domain from FLUXNET2015 dataset (plus 4 sites around the domain)
    else if (p_ebio_gee_t == p_ebio_gee_2) then
-      DATA Topt   /9.7, 23.580, 17.440, 20.000, 20.000, 22.000, 18.81, 0.000/ !cmr: optimized values for single sites: CH-Dav-ENF, table_europe-DBF, CH-Lae-MF, table_europe-SAV, table_europe-SHB, table_europe-CRO, IT-Tor-GRA, OTHERS
-      DATA Topt   /9.7, 23.580, 17.440, 20.000, 20.000, 22.000, 18.81, 0.000/ !cmr: optimized values for single sites: CH-Dav-ENF, table_europe-DBF, CH-Lae-MF, table_europe-SAV, table_europe-SHB, table_europe-CRO, IT-Tor-GRA, OTHERS
+      Topt = (/9.7, 23.580, 17.440, 20.000, 20.000, 22.000, 18.81, 0.000/) !cmr: optimized values for single sites: CH-Dav-ENF, table_europe-DBF, CH-Lae-MF, table_europe-SAV, table_europe-SHB, table_europe-CRO, IT-Tor-GRA, OTHERS
    else if (p_ebio_gee_t == p_ebio_gee_3) then
-      DATA Topt   /18.81, 23.580, 17.440, 20.000, 20.000, 22.000, 16.28, 0.000/ !cmr: optimized values for single sites: DE-Lkb-ENF,  IT-MBo-GRA,
-      DATA Topt   /18.81, 23.580, 17.440, 20.000, 20.000, 22.000, 16.28, 0.000/ !cmr: optimized values for single sites: DE-Lkb-ENF,  IT-MBo-GRA,
+      Topt = (/18.81, 23.580, 17.440, 20.000, 20.000, 22.000, 16.28, 0.000/) !cmr: optimized values for single sites: DE-Lkb-ENF,  IT-MBo-GRA,
    else if (p_ebio_gee_t == p_ebio_gee_4) then
-      DATA Topt   /14.52, 23.580, 17.440, 20.000, 20.000, 22.000, 13.01, 0.000/ !cmr: optimized values for single sites: IT-Lav-ENF, AT-Neu-GRA
-      DATA Topt   /14.52, 23.580, 17.440, 20.000, 20.000, 22.000, 13.01, 0.000/ !cmr: optimized values for single sites: IT-Lav-ENF, AT-Neu-GRA
+      Topt = (/14.52, 23.580, 17.440, 20.000, 20.000, 22.000, 13.01, 0.000/) !cmr: optimized values for single sites: IT-Lav-ENF, AT-Neu-GRA
    else if (p_ebio_gee_t == p_ebio_gee_5) then
-      DATA Topt   /11.9, 23.580, 17.440, 20.000, 20.000, 22.000, 15.880, 0.000/ !cmr: optimized values for single sites: IT-Ren-ENF
-      DATA Topt   /11.9, 23.580, 17.440, 20.000, 20.000, 22.000, 15.880, 0.000/ !cmr: optimized values for single sites: IT-Ren-ENF
+      Topt = (/11.9, 23.580, 17.440, 20.000, 20.000, 22.000, 15.880, 0.000/) !cmr: optimized values for single sites: IT-Ren-ENF
    else if (p_ebio_gee_t == p_ebio_gee_6) then
-      DATA Topt   /20.,20.,20.,20.,20.,22.,18.,0./ !cmr: using VPRM_table_EUROPE as a reference
-   end if 
+      Topt = (/20.,20.,20.,20.,20.,22.,18.,0./) !cmr: using VPRM_table_EUROPE as a reference
+   else if (p_ebio_gee_t == p_ebio_gee_9) then
+      Topt = (/13.68, 21.15, 16.49, 20.00, 20.23, 22.00, 15.34, 0.000/) !cmr: Topt-percentile ensemble member p10
+   else if (p_ebio_gee_t == p_ebio_gee_10) then
+      Topt = (/14.12, 21.28, 17.90, 20.00, 20.23, 22.00, 17.01, 0.000/) !cmr: Topt-percentile ensemble member p25
+   else if (p_ebio_gee_t == p_ebio_gee_11) then
+      Topt = (/16.42, 23.94, 19.60, 20.00, 20.23, 22.00, 18.56, 0.000/) !cmr: Topt-percentile ensemble member p50 (central)
+   else if (p_ebio_gee_t == p_ebio_gee_12) then
+      Topt = (/17.45, 25.91, 21.65, 20.00, 20.23, 22.00, 20.85, 0.000/) !cmr: Topt-percentile ensemble member p75
+   else if (p_ebio_gee_t == p_ebio_gee_13) then
+      Topt = (/19.69, 26.76, 22.60, 20.00, 20.23, 22.00, 21.21, 0.000/) !cmr: Topt-percentile ensemble member p90
+   end if
 CASE DEFAULT
   CALL wrf_message("check vprm_opt in namelist.input")
   CALL wrf_error_fatal ( "NO PARAMETER TABLE IS INCLUDED FOR THIS VPRM TABLE OPTION!")
@@ -329,23 +339,24 @@ REAL  ::  a1,a2,a3,f,g,df,dg,Tair,Tscale,EVI, vegfra, RADval, dTscale_dT,Wscale,
 REAL, DIMENSION(8) ::  Tmax,Tmin,Topt
 ! These are universal VPRM parameters
 DATA Tmin   /0.,0.,0.,2.,2.,5.,2.,0./
-!cmr: DATA Topt   /20.,20.,20.,20.,20.,22.,18.,0./
 DATA Tmax   /8*40./
 
 ! cmr begin: use optimized Temperature for Alps
+! NOTE: executable assignment, not DATA -- see the comment in subroutine VPRM.
+Topt = (/20.,20.,20.,20.,20.,22.,18.,0./)   ! default, overridden per branch below
 sel_pars: SELECT CASE(config_flags%vprm_opt)
 CASE ('VPRM_table_US')
-  DATA Topt   /20.,20.,20.,20.,20.,22.,18.,0./
+  Topt = (/20.,20.,20.,20.,20.,22.,18.,0./)
 CASE ('VPRM_table_EUROPE')
-  DATA Topt   /20.,20.,20.,20.,20.,22.,18.,0./
+  Topt = (/20.,20.,20.,20.,20.,22.,18.,0./)
 CASE ('VPRM_table_TROPICS')
-  DATA Topt   /20.,20.,20.,20.,20.,22.,18.,0./
-CASE ('VPRM_table_MULTI') 
+  Topt = (/20.,20.,20.,20.,20.,22.,18.,0./)
+CASE ('VPRM_table_MULTI')
    if (p_ebio_gee_t == p_ebio_gee_7) then
-      DATA Topt   /14.250, 23.580, 17.440, 20.000, 20.000, 22.000, 15.880, 0.000/ !cmr: optimized values in domain from FLUXNET2015 dataset (plus 4 sites around the domain)
+      Topt = (/14.250, 23.580, 17.440, 20.000, 20.000, 22.000, 15.880, 0.000/) !cmr: optimized values in domain from FLUXNET2015 dataset (plus 4 sites around the domain)
    else if (p_ebio_gee_t == p_ebio_gee_8) then
-      DATA Topt   /20.,20.,20.,20.,20.,22.,18.,0./ !cmr: using VPRM_table_EUROPE as a reference
-   end if 
+      Topt = (/20.,20.,20.,20.,20.,22.,18.,0./) !cmr: using VPRM_table_EUROPE as a reference
+   end if
 CASE DEFAULT
   CALL wrf_message("you need VPRM_table_MULTI to use derivatives of VRPM from subroutine dflux_dT")
   ! CALL wrf_error_fatal ( "NO PARAMETER TABLE IS INCLUDED FOR THIS VPRM TABLE OPTION!")

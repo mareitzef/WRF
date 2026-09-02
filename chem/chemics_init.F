@@ -610,7 +610,14 @@ if  ( config_flags%chem_opt==CO2_TRACER .OR. config_flags%chem_opt==GHG_TRACER )
          grid%rad_vprm_3, grid%lambda_vprm_3, grid%alpha_vprm_3, grid%resp_vprm_3, &
          grid%rad_vprm_4, grid%lambda_vprm_4, grid%alpha_vprm_4, grid%resp_vprm_4, &
          grid%rad_vprm_5, grid%lambda_vprm_5, grid%alpha_vprm_5, grid%resp_vprm_5, &
-         grid%rad_vprm_6, grid%lambda_vprm_6, grid%alpha_vprm_6, grid%resp_vprm_6, &         
+         grid%rad_vprm_6, grid%lambda_vprm_6, grid%alpha_vprm_6, grid%resp_vprm_6, &
+         config_flags )
+      call VPRM_par_initialize_percentiles ( &
+         grid%rad_vprm_9,  grid%lambda_vprm_9,  grid%alpha_vprm_9,  grid%resp_vprm_9,  &
+         grid%rad_vprm_10, grid%lambda_vprm_10, grid%alpha_vprm_10, grid%resp_vprm_10, &
+         grid%rad_vprm_11, grid%lambda_vprm_11, grid%alpha_vprm_11, grid%resp_vprm_11, &
+         grid%rad_vprm_12, grid%lambda_vprm_12, grid%alpha_vprm_12, grid%resp_vprm_12, &
+         grid%rad_vprm_13, grid%lambda_vprm_13, grid%alpha_vprm_13, grid%resp_vprm_13, &
          config_flags )
       CASE DEFAULT
       call VPRM_par_initialize ( grid%rad_vprm, grid%lambda_vprm, grid%alpha_vprm, grid%resp_vprm, config_flags )
@@ -2245,6 +2252,107 @@ alpha_vprm_6=   vprm_par_6(1:8,3)
 resp_vprm_6=    vprm_par_6(1:8,4)
 
 END SUBROUTINE VPRM_par_initialize_multi
+!******************************************************************************
+!
+SUBROUTINE VPRM_par_initialize_percentiles( &
+    rad_vprm_9,  lambda_vprm_9,  alpha_vprm_9,  resp_vprm_9,  &
+    rad_vprm_10, lambda_vprm_10, alpha_vprm_10, resp_vprm_10, &
+    rad_vprm_11, lambda_vprm_11, alpha_vprm_11, resp_vprm_11, &
+    rad_vprm_12, lambda_vprm_12, alpha_vprm_12, resp_vprm_12, &
+    rad_vprm_13, lambda_vprm_13, alpha_vprm_13, resp_vprm_13, &
+    config_flags)
+
+USE module_configure,only:  grid_config_rec_type
+
+! VPRM parameters for the 5-member Topt-percentile ensemble (p10/p25/p50/p75/p90),
+! run in parallel with the site-combo channels 1-6 - cmr
+IMPLICIT NONE
+
+REAL, DIMENSION(8), INTENT(OUT) ::  rad_vprm_9,  lambda_vprm_9,  alpha_vprm_9,  resp_vprm_9
+REAL, DIMENSION(8), INTENT(OUT) ::  rad_vprm_10, lambda_vprm_10, alpha_vprm_10, resp_vprm_10
+REAL, DIMENSION(8), INTENT(OUT) ::  rad_vprm_11, lambda_vprm_11, alpha_vprm_11, resp_vprm_11
+REAL, DIMENSION(8), INTENT(OUT) ::  rad_vprm_12, lambda_vprm_12, alpha_vprm_12, resp_vprm_12
+REAL, DIMENSION(8), INTENT(OUT) ::  rad_vprm_13, lambda_vprm_13, alpha_vprm_13, resp_vprm_13
+REAL, DIMENSION(8,4)            ::  vprm_table_multi_9, vprm_table_multi_10, vprm_table_multi_11, vprm_table_multi_12, vprm_table_multi_13
+REAL, DIMENSION(8,4)            ::  vprm_par_9, vprm_par_10, vprm_par_11, vprm_par_12, vprm_par_13
+
+TYPE(grid_config_rec_type), INTENT(IN) :: config_flags
+
+! Source of truth for these numbers:
+!   WRF_VPRM_inComplexTopo/WRF_VPRM_post/vprm_params_topt_p{10,25,50,75,90}.csv
+!   built by build_member_param_csvs.py from VPRM_tools/topt_percentiles.csv and
+!   param_percentiles.csv. The matching per-channel Topt lives in
+!   module_ghg_fluxes.F (subroutine VPRM, CASE 'VPRM_table_MULTI').
+! Rows (DATA fills column-major): 1 = rad0/PAR0, 2 = lambda, 3 = alpha, 4 = RESP0/beta.
+! Columns: veg class 1-8 = ENF, DBF, MF, SHB, SAV, CRO, GRA, Others.
+! NOTE: lambda is stored NEGATIVE here (GEE sign convention). VPRM clamps with
+! min(0.0,...), so a positive lambda would silently zero out every flux. The CSVs
+! carry the positive light-use efficiency, hence the sign flip.
+! Only t_opt, PAR0 and lambda vary between members; alpha/beta are Reco parameters
+! with no Topt dependence and are identical across all five.
+
+DATA vprm_table_multi_9 &      ! Topt-percentile ensemble member p10
+     /  124.4662,  168.3405,  216.1074,   363.000,   682.000,   364.288,  200.6365,     0.000, &
+         -0.4737,   -0.3066,   -0.2137,    -0.087,    -0.114,    -0.228,   -0.7818,    -0.000, &
+           0.175,     0.235,     0.202,     0.024,     0.005,     0.234,     0.390,     0.000, &
+           1.705,     0.887,     2.734,     0.000,     0.000,     1.048,     1.477,     0.000 /
+
+DATA vprm_table_multi_10 &     ! Topt-percentile ensemble member p25
+     /  143.5824,   181.506,  220.9904,   363.000,   682.000,   364.288,   235.009,     0.000, &
+         -0.4776,   -0.3254,   -0.2523,    -0.087,    -0.114,    -0.228,    -0.816,    -0.000, &
+           0.175,     0.235,     0.202,     0.024,     0.005,     0.234,     0.390,     0.000, &
+           1.705,     0.887,     2.734,     0.000,     0.000,     1.048,     1.477,     0.000 /
+
+DATA vprm_table_multi_11 &     ! Topt-percentile ensemble member p50 (central, = V24)
+     /   184.471,   181.506,   228.616,   363.000,   682.000,   364.288,   245.488,     0.000, &
+          -0.501,    -0.373,    -0.266,    -0.087,    -0.114,    -0.228,    -0.836,    -0.000, &
+           0.175,     0.235,     0.202,     0.024,     0.005,     0.234,     0.390,     0.000, &
+           1.705,     0.887,     2.734,     0.000,     0.000,     1.048,     1.477,     0.000 /
+
+DATA vprm_table_multi_12 &     ! Topt-percentile ensemble member p75
+     /  234.4421,  234.2737,  257.8281,   363.000,   682.000,   364.288,  278.5043,     0.000, &
+         -0.5597,    -0.373,   -0.2731,    -0.087,    -0.114,    -0.228,   -0.8832,    -0.000, &
+           0.175,     0.235,     0.202,     0.024,     0.005,     0.234,     0.390,     0.000, &
+           1.705,     0.887,     2.734,     0.000,     0.000,     1.048,     1.477,     0.000 /
+
+DATA vprm_table_multi_13 &     ! Topt-percentile ensemble member p90
+     /  234.7734,  247.8859,  317.7932,   363.000,   682.000,   364.288,  299.4293,     0.000, &
+         -0.5624,   -0.3964,   -0.3037,    -0.087,    -0.114,    -0.228,   -0.9357,    -0.000, &
+           0.175,     0.235,     0.202,     0.024,     0.005,     0.234,     0.390,     0.000, &
+           1.705,     0.887,     2.734,     0.000,     0.000,     1.048,     1.477,     0.000 /
+
+vprm_par_9 =vprm_table_multi_9
+vprm_par_10=vprm_table_multi_10
+vprm_par_11=vprm_table_multi_11
+vprm_par_12=vprm_table_multi_12
+vprm_par_13=vprm_table_multi_13
+
+rad_vprm_9=     vprm_par_9(1:8,1)
+lambda_vprm_9=  vprm_par_9(1:8,2)
+alpha_vprm_9=   vprm_par_9(1:8,3)
+resp_vprm_9=    vprm_par_9(1:8,4)
+
+rad_vprm_10=     vprm_par_10(1:8,1)
+lambda_vprm_10=  vprm_par_10(1:8,2)
+alpha_vprm_10=   vprm_par_10(1:8,3)
+resp_vprm_10=    vprm_par_10(1:8,4)
+
+rad_vprm_11=     vprm_par_11(1:8,1)
+lambda_vprm_11=  vprm_par_11(1:8,2)
+alpha_vprm_11=   vprm_par_11(1:8,3)
+resp_vprm_11=    vprm_par_11(1:8,4)
+
+rad_vprm_12=     vprm_par_12(1:8,1)
+lambda_vprm_12=  vprm_par_12(1:8,2)
+alpha_vprm_12=   vprm_par_12(1:8,3)
+resp_vprm_12=    vprm_par_12(1:8,4)
+
+rad_vprm_13=     vprm_par_13(1:8,1)
+lambda_vprm_13=  vprm_par_13(1:8,2)
+alpha_vprm_13=   vprm_par_13(1:8,3)
+resp_vprm_13=    vprm_par_13(1:8,4)
+
+END SUBROUTINE VPRM_par_initialize_percentiles
 !******************************************************************************
 !
 SUBROUTINE termite_initialize( biom,emch4,config_flags)
